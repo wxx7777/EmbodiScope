@@ -1,10 +1,18 @@
-# EmbodiScope
+<h1 align="center">EmbodiScope</h1>
 
-**具身智能实验诊断与恢复验证平台**
+<p align="center">
+  <strong>具身智能实验诊断与恢复验证平台</strong><br>
+  <sub>让每一次失败都有证据，让每一次恢复都可验证</sub>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/version-v2.3.0-0f766e" alt="EmbodiScope v2.3.0">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB" alt="Python 3.10+">
+  <img src="https://img.shields.io/badge/license-MIT-111827" alt="MIT License">
+  <img src="https://img.shields.io/badge/tests-58%2F58-15803d" alt="58/58 tests passing">
+</p>
 
 EmbodiScope 将机器人实验中的分散日志转化为一条可复现的证据链：**多模态数据接入、故障诊断、任务谓词推理、局部恢复、配对仿真验证和统计评测**。
-
-当前版本：`v2.3.0` · Python `3.10+` · MIT License
 
 <p align="center">
   <img src="docs/assets/recoverybench-v23-desktop.png" width="100%" alt="EmbodiScope RecoveryBench 多场景恢复统计评测">
