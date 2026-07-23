@@ -1,0 +1,12 @@
+* text=auto eol=lf
+
+*.h5 binary
+*.hdf5 binary
+*.jpg binary
+*.mcap binary
+*.mp4 binary
+*.parquet binary
+*.png binary
+*.pptx binary
+*.rrd binary
+*.zip binary

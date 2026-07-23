@@ -1,0 +1,8 @@
+{
+  "asset": "spatial-canvas.png",
+  "size": [1096, 529],
+  "mean_rgb": [236.86, 240.9, 237.82],
+  "stddev_rgb": [11.2, 10.31, 11.28],
+  "sample_unique_colors": 498,
+  "nonblank": true
+}

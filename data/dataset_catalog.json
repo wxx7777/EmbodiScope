@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "datasets": [
+    {
+      "id": "embodiscope-benchmark",
+      "name": "EmbodiScope 多故障基准",
+      "path": "data/demo_pick_place.csv",
+      "format": "CSV",
+      "origin": "项目内置基准",
+      "license": "MIT",
+      "description": "覆盖正常、同步错位、碰撞、卡滞、时间缺口和抓取滑脱的确定性基准。",
+      "episode_count": 6,
+      "row_count": 3600,
+      "modalities": ["关节", "TCP", "视觉运动", "力觉", "夹爪", "任务标签"],
+      "tags": ["多故障", "回归测试"]
+    },
+    {
+      "id": "lerobot-pusht",
+      "name": "LeRobot PushT 开源数据",
+      "path": "data/open_source/lerobot_pusht",
+      "format": "LeRobot Dataset v3",
+      "origin": "Hugging Face",
+      "license": "MIT",
+      "source_url": "https://huggingface.co/datasets/lerobot/pusht",
+      "revision": "7628202a2180972f291ba1bc6723834921e72c19",
+      "citation": "Chi et al., Diffusion Policy, IJRR 2024",
+      "description": "真实开源 PushT 示范数据，包含二维状态、动作、奖励、任务标记和 96×96 RGB 视频。",
+      "episode_count": 206,
+      "row_count": 25650,
+      "modalities": ["RGB 视频", "二维状态", "动作", "奖励", "任务标签"],
+      "tags": ["开源", "Diffusion Policy", "视觉操作"],
+      "featured": true
+    },
+    {
+      "id": "maniskill-collision",
+      "name": "ManiSkill 碰撞轨迹",
+      "path": "data/demo_maniskill_collision.h5",
+      "format": "ManiSkill HDF5",
+      "origin": "开源仿真基准",
+      "license": "MIT / Apache-2.0",
+      "source_url": "https://github.com/haosulab/ManiSkill",
+      "description": "Panda PickCube 轨迹，包含动作、关节、TCP、目标和真实接触力。",
+      "episode_count": 1,
+      "row_count": 600,
+      "modalities": ["关节", "动作", "TCP", "目标", "接触力"],
+      "tags": ["ManiSkill", "碰撞"]
+    },
+    {
+      "id": "ros2-mcap-collision",
+      "name": "ROS2 MCAP 碰撞记录",
+      "path": "data/demo_ros2_collision.mcap",
+      "format": "ROS2 MCAP",
+      "origin": "开源消息格式基准",
+      "license": "MIT / Apache-2.0",
+      "source_url": "https://github.com/foxglove/mcap",
+      "description": "使用标准 ROS2 JointState、Pose、Wrench 等消息编码的碰撞记录。",
+      "episode_count": 1,
+      "row_count": 600,
+      "modalities": ["ROS2", "关节", "位姿", "力觉"],
+      "tags": ["ROS2", "MCAP"]
+    }
+  ]
+}

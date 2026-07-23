@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="EmbodiScope 具身智能数据质量与失败诊断平台">
+  <title>EmbodiScope · 具身数据诊断</title>
+  <link rel="stylesheet" href="/style.css?v=2.3.0">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <div><strong>EmbodiScope</strong><span>具身数据诊断平台</span></div>
+    </div>
+    <div class="topbar-actions">
+      <div class="mode-switch" aria-label="工作模式">
+        <button class="mode-button active" id="diagnosticsMode" type="button">数据诊断</button>
+        <button class="mode-button" id="auditMode" type="button">批量审计</button>
+        <button class="mode-button" id="simulationMode" type="button">仿真回放</button>
+        <button class="mode-button" id="benchmarkMode" type="button">评测中心</button>
+        <button class="mode-button" id="embodiedMode" type="button">具身评估</button>
+        <button class="mode-button" id="reasoningMode" type="button">任务推理</button>
+        <button class="mode-button" id="recoveryMode" type="button">恢复实验</button>
+      </div>
+      <button class="button secondary library-button" id="datasetLibraryButton" type="button"><span class="library-label">数据集库</span><span id="libraryCount">—</span></button>
+      <button class="source-button" id="adapterButton" type="button" title="查看数据适配器">
+        <span class="source-dot"></span><span id="sourceFormat">CSV</span>
+      </button>
+      <span class="dataset-name" id="datasetName">正在读取数据…</span>
+      <input type="file" id="fileInput" accept=".csv,.parquet,.pq,.zip,.h5,.hdf5,.mcap,.bag,.db3,text/csv" hidden>
+      <button class="button secondary" id="resetButton" type="button">恢复演示数据</button>
+      <button class="button primary" id="uploadButton" type="button">导入数据</button>
+    </div>
+  </header>
+
+  <div class="workspace" id="diagnosticsWorkspace">
+    <aside class="sidebar">
+      <section class="dataset-summary" aria-label="数据集概要">
+        <div class="section-label">数据集概览</div>
+        <div class="summary-grid">
+          <div><strong id="episodeCount">—</strong><span>Episodes</span></div>
+          <div><strong id="successRate">—</strong><span>成功率</span></div>
+          <div><strong id="averageScore">—</strong><span>平均质量</span></div>
+          <div><strong id="criticalCount">—</strong><span>严重异常</span></div>
+        </div>
+        <div class="source-summary">
+          <span class="source-summary-icon">OS</span>
+          <div><strong id="sourceAdapter">正在识别</strong><small id="sourceDetail">数据适配器</small></div>
+        </div>
+      </section>
+      <div class="episode-toolbar">
+        <label for="episodeSearch">实验记录</label>
+        <input id="episodeSearch" type="search" placeholder="搜索 Episode">
+      </div>
+      <nav class="episode-list" id="episodeList" aria-label="Episode 列表"></nav>
+      <div class="sidebar-foot">
+        <span class="health-dot"></span>
+        <span>诊断引擎在线</span>
+        <small>v2.3</small>
+      </div>
+    </aside>
+
+    <main class="main" id="mainContent">
+      <div class="loading" id="loadingState">
+        <span class="spinner"></span>
+        <p>正在分析时序信号与多模态同步状态</p>
+      </div>
+
+      <div class="dashboard" id="dashboard" hidden>
+        <section class="episode-head">
+          <div>
+            <div class="breadcrumb"><span id="headDataset">演示数据集</span><b>/</b><span>诊断详情</span></div>
+            <div class="title-row">
+              <h1 id="episodeTitle">EP-001</h1>
+              <span class="status-badge" id="episodeStatus">任务成功</span>
+            </div>
+            <p id="episodeMeta">600 个数据点 · 12.0 秒 · 50 Hz</p>
+          </div>
+          <div class="score-block">
+            <div class="score-ring" id="scoreRing">
+              <strong id="qualityScore">—</strong><span>/ 100</span>
+            </div>
+            <div><b id="qualityGrade">质量等级 —</b><span>综合数据质量</span></div>
+          </div>
+        </section>
+
+        <section class="metric-strip" aria-label="关键指标">
+          <div class="metric"><span>缺失率</span><strong id="metricMissing">—</strong><small id="missingHint">数据完整性</small></div>
+          <div class="metric"><span>同步偏移</span><strong id="metricSync">—</strong><small id="syncHint">视觉 ↔ 状态</small></div>
+          <div class="metric"><span>关节突跳</span><strong id="metricJumps">—</strong><small>控制稳定性</small></div>
+          <div class="metric"><span>力峰异常</span><strong id="metricForce">—</strong><small>执行安全性</small></div>
+          <div class="metric"><span>诊断问题</span><strong id="metricIssues">—</strong><small id="criticalHint">需人工复核</small></div>
+        </section>
+
+        <nav class="tabs" aria-label="分析视图">
+          <button class="tab active" data-tab="overview" type="button">总览</button>
+          <button class="tab" data-tab="spatial" type="button">空间回放</button>
+          <button class="tab" data-tab="media" type="button">视频回放 <span id="mediaTabState">—</span></button>
+          <button class="tab" data-tab="signals" type="button">信号检查</button>
+          <button class="tab" data-tab="issues" type="button">问题清单 <span id="issueTabCount">0</span></button>
+          <button class="tab" data-tab="report" type="button">诊断报告</button>
+        </nav>
+
+        <section class="tab-panel active" id="panel-overview">
+          <div class="overview-grid">
+            <section class="quality-panel">
+              <div class="panel-heading">
+                <div><h2>五维质量评分</h2><p>从训练可用性与真机安全角度综合评价</p></div>
+              </div>
+              <div class="score-bars" id="scoreBars"></div>
+            </section>
+            <section class="cause-panel">
+              <div class="panel-heading"><div><h2>失败根因排序</h2><p>由时序证据自动生成的排查优先级</p></div></div>
+              <div id="rootCauses"></div>
+            </section>
+          </div>
+          <section class="timeline-panel">
+            <div class="panel-heading">
+              <div><h2>异常时间轴</h2><p>点击事件可跳转至对应信号窗口</p></div>
+              <span class="legend"><i class="critical-dot"></i>严重 <i class="warning-dot"></i>警告</span>
+            </div>
+            <div class="event-timeline" id="eventTimeline"></div>
+          </section>
+        </section>
+
+        <section class="tab-panel" id="panel-spatial">
+          <section class="spatial-workbench">
+            <div class="spatial-toolbar">
+              <div>
+                <span class="spatial-kicker">THREE.JS SPATIAL REPLAY</span>
+                <h2>末端轨迹与异常位置回放</h2>
+                <p>拖拽旋转视角，滚轮缩放；时间游标与诊断事件共享同一基准。</p>
+              </div>
+              <div class="spatial-actions">
+                <div class="view-segment" aria-label="空间视角">
+                  <button class="spatial-view-button active" data-view="perspective" type="button">透视</button>
+                  <button class="spatial-view-button" data-view="top" type="button">俯视</button>
+                  <button class="spatial-view-button" data-view="side" type="button">侧视</button>
+                </div>
+                <button class="button secondary rerun-button" id="downloadRerun" type="button" title="导出到 Rerun Viewer">导出 Rerun</button>
+              </div>
+            </div>
+            <div class="spatial-viewport" id="spatialViewport">
+              <canvas id="spatialCanvas" aria-label="机器人末端三维轨迹"></canvas>
+              <div class="spatial-axis-key" aria-hidden="true"><span class="axis-x">X</span><span class="axis-y">Y</span><span class="axis-z">Z</span></div>
+              <div class="spatial-coordinate">
+                <span id="spatialTime">0.00 s</span>
+                <strong id="spatialPosition">X 0.000 · Y 0.000 · Z 0.000</strong>
+              </div>
+              <div class="spatial-empty" id="spatialEmpty" hidden>当前 Episode 缺少末端 XYZ 位姿，无法构建空间轨迹。</div>
+            </div>
+            <div class="spatial-playback">
+              <button class="play-button" id="spatialPlay" type="button" aria-label="播放空间轨迹" title="播放">▶</button>
+              <input id="spatialScrubber" type="range" min="0" max="1" value="0" step="1" aria-label="空间轨迹时间游标">
+              <span id="spatialProgress">0 / 0</span>
+              <div class="spatial-legend"><span><i class="trajectory-key"></i>轨迹</span><span><i class="event-key"></i>异常</span><span><i class="tcp-key"></i>TCP</span></div>
+            </div>
+          </section>
+        </section>
+
+        <section class="tab-panel" id="panel-media">
+          <section class="media-workbench">
+            <header class="media-toolbar">
+              <div><span class="spatial-kicker">DATASET VIDEO</span><h2>Episode 视觉回放</h2></div>
+              <div><span id="mediaFeature">RGB</span><strong id="mediaTime">0.00 s</strong></div>
+            </header>
+            <div class="dataset-video-wrap">
+              <video id="datasetVideo" preload="metadata" playsinline></video>
+              <div class="media-empty" id="mediaEmpty">当前 Episode 不包含视频资源</div>
+            </div>
+            <div class="media-transport">
+              <button class="play-button" id="mediaPlay" type="button" aria-label="播放数据集视频" title="播放">▶</button>
+              <input id="mediaScrubber" type="range" min="0" max="1" value="0" step="0.01" aria-label="数据集视频时间游标">
+              <span id="mediaProgress">0.00 / 0.00 s</span>
+              <small>Episode timestamp</small>
+            </div>
+          </section>
+        </section>
+
+        <section class="tab-panel" id="panel-signals">
+          <section class="signal-panel">
+            <div class="panel-heading signal-heading">
+              <div><h2>多模态时序信号</h2><p>统一时间轴检查运动、视觉、力觉与夹爪状态</p></div>
+              <div class="signal-controls" id="signalControls"></div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="signalChart" aria-label="时序信号折线图"></canvas>
+              <div class="chart-tooltip" id="chartTooltip" hidden></div>
+            </div>
+            <div class="chart-foot"><span id="chartRange">0.00 s — 12.00 s</span><span>移动指针查看精确值</span></div>
+          </section>
+          <div class="sync-explainer">
+            <div class="sync-visual" aria-hidden="true"><span>机器人状态</span><i></i><span>视觉运动</span><i></i></div>
+            <div><h3 id="syncTitle">同步状态良好</h3><p id="syncDescription">视觉变化与机器人末端运动处于同一时间基准。</p></div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-issues">
+          <div class="issue-summary-row" id="issueSummary"></div>
+          <section class="repair-workbench">
+            <header class="repair-heading">
+              <div><span>TRACEABLE DATA REPAIR</span><h2>可追溯清洗方案</h2><p>可验证异常执行数值校正，真实碰撞与任务失败仅隔离，不改写原始测量。</p></div>
+              <button class="button primary" id="generateRepair" type="button">生成清洗方案</button>
+            </header>
+            <div class="repair-loading" id="repairLoading" hidden><span class="spinner"></span><div><strong>正在生成修复证据链</strong><small>计算来源哈希、校正预览和训练可用掩码</small></div></div>
+            <div class="repair-result" id="repairResult" hidden>
+              <div class="repair-summary">
+                <div><span>数据保留率</span><strong id="repairRetained">—</strong><small id="repairRetainedRows">quality_valid</small></div>
+                <div><span>修改行</span><strong id="repairModified">—</strong><small>含校正与标记</small></div>
+                <div><span>风险隔离</span><strong id="repairQuarantined">—</strong><small>不进入训练</small></div>
+                <div><span>连续片段</span><strong id="repairSegments">—</strong><small>按时间缺口切分</small></div>
+                <div class="repair-resolution"><span>问题变化</span><strong id="repairIssueDelta">—</strong><small id="repairStatus">等待生成</small></div>
+              </div>
+              <div class="repair-layout">
+                <section class="repair-actions-section">
+                  <header><div><h3>处理动作</h3><p>校正、分段与隔离采用不同策略</p></div><span id="repairActionCount">0 ACTIONS</span></header>
+                  <div class="repair-actions" id="repairActions"></div>
+                </section>
+                <aside class="repair-provenance">
+                  <span>PROVENANCE</span><h3>来源与产物指纹</h3>
+                  <label>源数据 SHA-256<code id="repairSourceHash">—</code></label>
+                  <label>清洗产物 SHA-256<code id="repairArtifactHash">—</code></label>
+                  <p id="repairPolicy">物理事件保持原值，训练入口由 quality_valid 控制。</p>
+                  <div><a class="button primary" id="downloadRepairCsv" href="#">下载清洗 CSV</a><a class="button secondary" id="downloadRepairManifest" href="#">下载 manifest</a></div>
+                </aside>
+              </div>
+              <section class="repair-preview-section">
+                <header><div><h3>修复前后证据</h3><p>仅展示受影响行，完整修改记录保存在下载产物中</p></div><span id="repairPreviewState">PREVIEW</span></header>
+                <div class="repair-preview-wrap"><table class="repair-preview-table"><thead><tr><th>源行</th><th>时间</th><th>训练状态</th><th>处理动作</th><th>值变化</th></tr></thead><tbody id="repairPreviewBody"></tbody></table></div>
+              </section>
+            </div>
+          </section>
+          <div class="issue-table-wrap">
+            <table class="issue-table">
+              <thead><tr><th>级别</th><th>问题与证据</th><th>时间范围</th><th>修复建议</th></tr></thead>
+              <tbody id="issueTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-report">
+          <div class="report-toolbar">
+            <div><h2>可交付诊断报告</h2><p>报告包含评分、证据、根因排序和修复建议</p></div>
+            <button class="button primary" id="downloadReport" type="button">下载 Markdown 报告</button>
+          </div>
+          <article class="report-preview" id="reportPreview"></article>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <main class="simulation-page" id="simulationPage" hidden>
+    <header class="simulation-heading">
+      <div>
+        <span class="simulation-kicker">MANISKILL CLOSED LOOP</span>
+        <h1>真实仿真与同步故障回放</h1>
+        <p>PhysX 执行机器人动力学与接触求解，SAPIEN 相机录制 RGB，结果自动进入 EmbodiScope 诊断链路。</p>
+      </div>
+      <div class="runtime-badge" id="simulationRuntime">
+        <i></i><div><strong>正在检测运行时</strong><span>ManiSkill / SAPIEN / PhysX</span></div>
+      </div>
+    </header>
+
+    <section class="simulation-controls" aria-label="仿真配置">
+      <label><span>仿真环境</span><select id="simulationEnv"><option value="PickCube-v1">Panda Pick Cube</option></select></label>
+      <label><span>故障场景</span><select id="simulationScenario"></select></label>
+      <label><span>随机种子</span><input id="simulationSeed" type="number" min="0" max="2147483647" value="7"></label>
+      <label><span>控制步数</span><input id="simulationSteps" type="number" min="30" max="160" value="80"></label>
+      <button class="button primary simulation-run" id="runSimulation" type="button">启动真实仿真</button>
+    </section>
+
+    <section class="simulation-scenario-brief" id="simulationScenarioBrief" aria-label="场景说明">
+      <div><span id="simulationScenarioCategory">基准任务</span><strong id="simulationScenarioName">完整抓取到目标</strong><p id="simulationScenarioDescription">Panda 完成接近、抓取和目标搬运。</p></div>
+      <div class="simulation-expected" id="simulationExpectedEvidence"></div>
+      <b id="simulationScenarioCount">10 SCENARIOS</b>
+    </section>
+
+    <section class="simulation-job" id="simulationJob" hidden>
+      <div class="job-status-row">
+        <div><span id="simulationJobId">SIM</span><strong id="simulationJobMessage">正在启动</strong></div>
+        <strong id="simulationProgressLabel">0%</strong>
+      </div>
+      <div class="job-progress"><i id="simulationProgressBar"></i></div>
+      <button class="job-cancel" id="cancelSimulation" type="button">取消作业</button>
+    </section>
+
+    <section class="simulation-empty" id="simulationEmpty">
+      <div class="simulation-empty-visual" aria-hidden="true"><span>PANDA</span><i></i><b>RGB</b><i></i><strong>DIAG</strong></div>
+      <div><h2>等待启动仿真任务</h2><p>建议先选择“碰撞注入”，可直接展示真实接触力峰值与诊断事件同步定位。</p></div>
+    </section>
+
+    <section class="simulation-replay" id="simulationReplay" hidden>
+      <div class="replay-summary">
+        <div><span>环境</span><strong id="replayEnv">—</strong></div>
+        <div><span>场景</span><strong id="replayScenario">—</strong></div>
+        <div><span>仿真帧</span><strong id="replayFrames">—</strong></div>
+        <div><span>接触力峰值</span><strong id="replayPeakForce">—</strong></div>
+        <div><span>执行耗时</span><strong id="replayWallTime">—</strong></div>
+        <button class="button secondary" id="loadSimulationDataset" type="button">送入诊断</button>
+      </div>
+
+      <div class="replay-stage">
+        <section class="video-stage">
+          <header><div><span>CAMERA / RGB</span><strong>真实 SAPIEN 相机</strong></div><b id="videoFrameState">FRAME OK</b></header>
+          <video id="simulationVideo" playsinline preload="metadata"></video>
+          <div class="stage-readout"><span id="replayTime">0.00 s</span><strong id="replayPhase">初始化</strong></div>
+        </section>
+        <section class="digital-stage">
+          <header><div><span>DIGITAL TWIN / THREE.JS</span><strong>Panda 连杆与物体状态</strong></div><b>PHYSX STATE</b></header>
+          <div class="simulation-canvas-wrap"><canvas id="simulationCanvas" aria-label="Panda 仿真三维回放"></canvas></div>
+          <div class="stage-readout"><span id="replayTcp">TCP —</span><strong id="replayObject">OBJ —</strong></div>
+        </section>
+      </div>
+
+      <div class="replay-transport">
+        <button class="play-button" id="simulationPlay" type="button" title="播放">▶</button>
+        <input id="simulationScrubber" type="range" min="0" max="1" value="0" step="1" aria-label="仿真同步时间游标">
+        <span id="simulationFrameCounter">0 / 0</span>
+      </div>
+
+      <div class="telemetry-strip">
+        <div><span>接触力</span><strong id="telemetryForce">0.0 N</strong><i class="telemetry-meter"><b id="forceMeter"></b></i></div>
+        <div><span>动作强度</span><strong id="telemetryAction">0.00</strong><i class="telemetry-meter"><b id="actionMeter"></b></i></div>
+        <div><span>抓取状态</span><strong id="telemetryGrasp">未抓取</strong><i class="telemetry-meter"><b id="graspMeter"></b></i></div>
+        <div><span>视觉帧</span><strong id="telemetryFrame">有效</strong><i class="telemetry-meter"><b id="frameMeter"></b></i></div>
+        <div class="replay-events"><span>注入与诊断事件</span><div id="simulationEvents"></div></div>
+      </div>
+    </section>
+  </main>
+
+  <main class="recovery-page" id="recoveryPage" hidden>
+    <header class="recovery-heading">
+      <div>
+        <span class="recovery-kicker">RECOVERYLAB / PAIRED INTERVENTION</span>
+        <h1>失败恢复实验室</h1>
+        <p>在相同环境、随机种子和故障下运行失败组与恢复组，验证首因谓词、局部恢复算子、任务成功和安全代价。</p>
+      </div>
+      <div class="recovery-status" id="recoveryStatus">
+        <i></i><div><strong>等待实验</strong><span>Failure A/B Recovered</span></div>
+      </div>
+    </header>
+
+    <section class="recovery-controls" aria-label="恢复实验配置">
+      <label><span>恢复协议</span><select id="recoveryScenario"></select></label>
+      <label><span>随机种子</span><input id="recoverySeed" type="number" min="0" max="2147483647" value="7"></label>
+      <label><span>实验步数</span><input id="recoveryHorizon" type="number" min="100" max="160" value="140"></label>
+      <button class="button primary" id="runRecovery" type="button">运行 A/B 恢复实验</button>
+    </section>
+
+    <section class="recovery-protocol" aria-label="配对实验协议">
+      <div><span>CONTROLLED VARIABLES</span><strong>同环境 · 同种子 · 同故障 · 同相机</strong></div>
+      <div class="recovery-protocol-flow"><b>A</b><span>失败执行</span><i></i><b>R</b><span>局部恢复</span><i></i><b>B</b><span>恢复验证</span></div>
+      <p id="recoveryProtocolDescription">保留故障，只在首因出现后执行局部恢复。</p>
+    </section>
+
+    <section class="recovery-job" id="recoveryJob" hidden>
+      <div><span id="recoveryJobId">RECOVERY</span><strong id="recoveryJobMessage">正在启动</strong><b id="recoveryProgressLabel">0%</b></div>
+      <div class="job-progress"><i id="recoveryProgressBar"></i></div>
+      <button id="cancelRecovery" type="button">取消实验</button>
+    </section>
+
+    <section class="recovery-benchmark" aria-labelledby="recoveryBenchmarkTitle">
+      <header>
+        <div>
+          <span>RECOVERYBENCH / MULTI-SEED GENERALIZATION</span>
+          <h2 id="recoveryBenchmarkTitle">多场景恢复统计评测</h2>
+          <p>对三类物理故障逐种子运行 Failure / Recovered 配对实验，分别报告恢复能力与安全性。</p>
+        </div>
+        <div class="recovery-benchmark-status" id="recoveryBenchmarkStatus"><i></i><strong>等待批测</strong><small>3 scenarios · paired trials</small></div>
+      </header>
+      <div class="recovery-benchmark-controls">
+        <label><span>随机种子数量</span><select id="recoveryBenchmarkSeeds"><option value="2">2 seeds</option><option value="3" selected>3 seeds</option><option value="5">5 seeds</option><option value="8">8 seeds</option></select></label>
+        <label><span>起始候选种子</span><input id="recoveryBenchmarkBaseSeed" type="number" min="0" max="2147483639" value="7"></label>
+        <label><span>单次步数</span><input id="recoveryBenchmarkHorizon" type="number" min="100" max="160" value="140"></label>
+        <button class="button primary" id="runRecoveryBenchmark" type="button">运行 RecoveryBench</button>
+        <button class="button secondary" id="cancelRecoveryBenchmark" type="button" hidden>取消</button>
+        <a class="button secondary" id="downloadRecoveryBenchmark" href="#" hidden>导出 JSON</a>
+      </div>
+      <div class="recovery-benchmark-job" id="recoveryBenchmarkJob" hidden>
+        <div><code id="recoveryBenchmarkJobId">RECOVERY-BENCH</code><strong id="recoveryBenchmarkMessage">正在启动</strong><b id="recoveryBenchmarkProgressLabel">0%</b></div>
+        <div class="job-progress"><i id="recoveryBenchmarkProgressBar"></i></div>
+      </div>
+      <div class="recovery-benchmark-results" id="recoveryBenchmarkResults" hidden>
+        <section class="recovery-benchmark-verdicts" aria-label="RecoveryBench 独立判定">
+          <article class="task"><span>任务恢复率</span><strong id="recoveryBenchmarkTaskRate">—</strong><small id="recoveryBenchmarkTaskCI">Wilson 95% CI</small></article>
+          <article class="episode"><span>整段执行安全率</span><strong id="recoveryBenchmarkEpisodeSafety">—</strong><small>包含故障注入之前与之后</small></article>
+          <article class="post"><span>干预后安全率</span><strong id="recoveryBenchmarkPostSafety">—</strong><small>从在线恢复触发时刻计算</small></article>
+        </section>
+        <section class="recovery-benchmark-evidence">
+          <div><span>在线触发覆盖</span><strong id="recoveryBenchmarkTrigger">—</strong></div>
+          <div><span>配对完整率</span><strong id="recoveryBenchmarkPairs">—</strong></div>
+          <div><span>恢复延迟 p95</span><strong id="recoveryBenchmarkLatency">—</strong></div>
+          <div><span>平均路径代价</span><strong id="recoveryBenchmarkPath">—</strong></div>
+          <div><span>算子完成率</span><strong id="recoveryBenchmarkOperators">—</strong></div>
+        </section>
+        <section class="recovery-benchmark-table-panel">
+          <header><div><h3>逐场景恢复与安全剖面</h3><p>恢复成功不自动等价于整段执行安全</p></div><span id="recoveryBenchmarkTrialCount">0 PAIRED TRIALS</span></header>
+          <div class="recovery-benchmark-table-wrap"><table><thead><tr><th>故障场景</th><th>配对数</th><th>任务恢复</th><th>Wilson 95% CI</th><th>整段安全</th><th>干预后安全</th><th>在线触发</th><th>平均延迟</th></tr></thead><tbody id="recoveryBenchmarkScenarioBody"></tbody></table></div>
+        </section>
+        <section class="recovery-benchmark-table-panel matrix">
+          <header><div><h3>Seed × Scenario 证据矩阵</h3><p>每格同时编码 RECOVERED 与 SAFE，避免单一成功标签</p></div><span>R / EPISODE SAFETY / POST SAFETY</span></header>
+          <div class="recovery-benchmark-table-wrap"><table><thead id="recoveryBenchmarkMatrixHead"></thead><tbody id="recoveryBenchmarkMatrixBody"></tbody></table></div>
+        </section>
+        <div class="recovery-benchmark-exclusions" id="recoveryBenchmarkExclusions" hidden></div>
+        <p class="recovery-benchmark-boundary">结论边界：RecoveryBench 验证确定性仿真中的局部恢复鲁棒性；碰撞被主动注入时，任务可以恢复，但该 Episode 仍应判为不安全。</p>
+      </div>
+    </section>
+
+    <section class="recovery-empty" id="recoveryEmpty">
+      <div class="recovery-empty-flow" aria-hidden="true"><span>FAILURE</span><i></i><b>PREDICATE</b><i></i><strong>RECOVERY</strong></div>
+      <div><h2 id="recoveryEmptyTitle">等待配对恢复实验</h2><p id="recoveryEmptyMessage">当前协议覆盖碰撞、夹爪执行失效和抓取滑脱。</p></div>
+    </section>
+
+    <div id="recoveryResults" hidden>
+      <section class="recovery-metrics" aria-label="恢复实验核心指标">
+        <div><span>任务恢复</span><strong id="recoveryVerdict">—</strong><small id="recoveryTaskDelta">Failure → Recovered</small></div>
+        <div><span>整段执行安全</span><strong id="recoveryEpisodeSafety">—</strong><small>完整 Recovered Episode</small></div>
+        <div><span>干预后安全</span><strong id="recoveryPostSafety">—</strong><small>从在线触发时刻计算</small></div>
+        <div><span>首因谓词</span><strong id="recoveryPredicate">—</strong><small id="recoveryPredicateLabel">Predicate restoration</small></div>
+        <div><span>恢复延迟</span><strong id="recoveryLatency">—</strong><small>从干预到任务成功</small></div>
+        <div><span>路径代价</span><strong id="recoveryPathOverhead">—</strong><small id="recoveryPathOverheadNote">共同观测窗口</small></div>
+      </section>
+
+      <section class="recovery-pair">
+        <article class="recovery-variant failure">
+          <header><div><span>VARIANT A / FAILURE</span><strong>保留故障，不执行恢复</strong></div><b id="recoveryFailureStatus">FAILED</b></header>
+          <video id="recoveryFailureVideo" playsinline preload="metadata"></video>
+          <footer><span id="recoveryFailureTime">0.00 s</span><strong id="recoveryFailureReadout">success=false</strong></footer>
+        </article>
+        <article class="recovery-variant recovered">
+          <header><div><span>VARIANT B / RECOVERED</span><strong>保留故障，执行局部恢复</strong></div><b id="recoveryRecoveredStatus">RECOVERED</b></header>
+          <video id="recoveryRecoveredVideo" playsinline preload="metadata"></video>
+          <footer><span id="recoveryRecoveredTime">0.00 s</span><strong id="recoveryRecoveredReadout">predicate=false</strong></footer>
+        </article>
+      </section>
+
+      <div class="recovery-transport">
+        <button class="play-button" id="recoveryPlay" type="button" title="播放">▶</button>
+        <input id="recoveryScrubber" type="range" min="0" max="1" value="0" step="0.05" aria-label="恢复实验同步时间游标">
+        <span id="recoveryTime">0.00 s</span>
+      </div>
+
+      <section class="recovery-timeline-panel">
+        <header>
+          <div><h2>在线触发与物理证据</h2><p id="recoveryTimelineSummary">等待恢复事件</p></div>
+          <span id="recoveryPairFingerprint">PAIR —</span>
+        </header>
+        <div class="recovery-evidence-legend"><span class="failure">Failure force</span><span class="recovered">Recovered force</span><span class="threshold">36 N guard</span><span class="playhead">Time cursor</span></div>
+        <div class="recovery-evidence-chart"><canvas id="recoveryEvidenceCanvas"></canvas></div>
+        <div class="recovery-event-tracks">
+          <div><strong>FAILURE</strong><div class="recovery-event-track" id="recoveryFailureEvents"></div></div>
+          <div><strong>RECOVERED</strong><div class="recovery-event-track" id="recoveryRecoveredEvents"></div></div>
+        </div>
+      </section>
+
+      <div class="recovery-evidence-layout">
+        <section class="recovery-plan-panel">
+          <header><div><h2>恢复算子执行链</h2><p id="recoveryPlanSummary">等待恢复结果</p></div><span id="recoveryOperatorRate">0% COMPLETE</span></header>
+          <div id="recoveryPlanList"></div>
+        </section>
+        <aside class="recovery-gates-panel">
+          <span>RECOVERY QUALITY GATES</span>
+          <h2>恢复验收</h2>
+          <div id="recoveryGates"></div>
+        </aside>
+      </div>
+
+      <section class="recovery-comparison-panel">
+        <header><div><h2>Failure / Recovered 对照</h2><p>同一故障条件下比较任务结果、路径与物理状态</p></div><a id="downloadRecoveryResult" href="#">导出实验 JSON</a></header>
+        <div class="recovery-comparison-wrap">
+          <table class="recovery-comparison-table">
+            <thead><tr><th>指标</th><th>Failure</th><th>Recovered</th><th>变化</th></tr></thead>
+            <tbody id="recoveryComparisonBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="recovery-method">
+        <div><span>OPEN-SOURCE BASIS</span><h2>恢复闭环依据</h2></div>
+        <div id="recoverySources"></div>
+        <p>恢复组不会删除原始故障；差异只来自故障后触发的局部恢复算子。结果证明一次具体干预是否恢复任务，不代表对全部场景的泛化成功率。</p>
+      </section>
+    </div>
+  </main>
+
+  <main class="embodied-page" id="embodiedPage" hidden>
+    <header class="embodied-heading">
+      <div>
+        <span class="embodied-kicker">EMBODIED POLICY READINESS</span>
+        <h1>具身策略数据就绪度</h1>
+        <p>验证观测、动作、状态转移、接触事件与任务结果是否形成可用于模仿学习和离线策略学习的闭环证据。</p>
+      </div>
+      <div class="embodied-status" id="embodiedStatus">
+        <i></i><div><strong>等待评估</strong><span>Observation → Action → World</span></div>
+      </div>
+    </header>
+
+    <section class="embodied-toolbar" aria-label="具身策略评估操作">
+      <div><span id="embodiedDatasetName">当前数据集</span><strong id="embodiedProtocolLabel">五维闭环数据契约</strong></div>
+      <button class="button primary" id="runEmbodiedEvaluation" type="button">重新评估</button>
+      <a class="button secondary" href="/api/embodied.json">导出 JSON</a>
+    </section>
+
+    <section class="embodied-loading" id="embodiedLoading">
+      <span class="spinner"></span><div><strong>正在重建策略闭环</strong><p>对齐动作、状态响应、任务阶段和接触证据</p></div>
+    </section>
+
+    <div id="embodiedResults" hidden>
+      <section class="embodied-metrics" aria-label="具身策略核心指标">
+        <div><span>就绪度总分</span><strong id="embodiedScore">—</strong><small>闭环数据契约</small></div>
+        <div><span>训练就绪率</span><strong id="embodiedReadyRate">—</strong><small>无阻断项 Episode</small></div>
+        <div><span>显式动作轨迹</span><strong id="embodiedActionEpisodes">—</strong><small>非状态差分代理</small></div>
+        <div><span>接触语义覆盖</span><strong id="embodiedContactEpisodes">—</strong><small>力觉 / 夹爪 / 距离</small></div>
+        <div><span>需复核轨迹</span><strong id="embodiedReviewEpisodes">—</strong><small>Review + Blocked</small></div>
+      </section>
+
+      <div class="embodied-overview">
+        <section class="embodied-dimensions">
+          <header><div><h2>五维闭环证据</h2><p>评价数据是否表达策略与物理世界的相互作用</p></div><span>SCORE / 100</span></header>
+          <div id="embodiedDimensionBars"></div>
+        </section>
+        <aside class="embodied-contract">
+          <span>CLOSED-LOOP CONTRACT</span>
+          <h2>具身交互链</h2>
+          <ol>
+            <li><b>01</b><div><strong>Observation</strong><small>本体状态、视觉与任务上下文</small></div></li>
+            <li><b>02</b><div><strong>Action</strong><small>策略或遥操作控制指令</small></div></li>
+            <li><b>03</b><div><strong>Next State</strong><small>动作后的机器人与物体状态</small></div></li>
+            <li><b>04</b><div><strong>Contact</strong><small>力、夹爪与目标关系</small></div></li>
+            <li><b>05</b><div><strong>Outcome</strong><small>成功、奖励、终止或截断</small></div></li>
+          </ol>
+        </aside>
+      </div>
+
+      <section class="embodied-blockers" id="embodiedBlockerSection">
+        <header><div><h2>数据契约缺口</h2><p>按受影响 Episode 数排序</p></div><span id="embodiedBlockerCount">0 TYPES</span></header>
+        <div id="embodiedBlockers"></div>
+      </section>
+
+      <section class="embodied-table-section">
+        <header><div><h2>Episode 策略就绪明细</h2><p>显式区分真实 action 与状态差分代理</p></div><span>CAUSALITY / CONTACT / PHASE</span></header>
+        <div class="embodied-table-wrap">
+          <table class="embodied-table">
+            <thead><tr><th>Episode</th><th>判定</th><th>总分</th><th>动作来源</th><th>动作-状态响应</th><th>响应延迟</th><th>任务阶段</th><th>接触窗口</th><th>主要缺口</th></tr></thead>
+            <tbody id="embodiedTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="embodied-method">
+        <div><span>OPEN-SOURCE BASIS</span><h2>开源方法依据</h2></div>
+        <div id="embodiedSources"></div>
+        <p>该分数只判断数据是否适合进入策略训练，不等价于策略性能或真实机器人成功率。</p>
+      </section>
+    </div>
+  </main>
+
+  <main class="reasoning-page" id="reasoningPage" hidden>
+    <header class="reasoning-heading">
+      <div>
+        <span class="reasoning-kicker">TASK AND MOTION REASONING</span>
+        <h1>任务图与失败恢复规划</h1>
+        <p>将连续轨迹落到可解释的任务谓词，检查技能前置条件、预期效果与安全不变量，并从最早失败点生成局部恢复计划。</p>
+      </div>
+      <div class="reasoning-status" id="reasoningStatus">
+        <i></i><div><strong>等待推理</strong><span>Predicate → Operator → Recovery</span></div>
+      </div>
+    </header>
+
+    <section class="reasoning-toolbar" aria-label="任务推理操作">
+      <div><span id="reasoningDatasetName">当前数据集</span><strong>Pick-and-Place Grounded Task Graph</strong></div>
+      <label><span>查看 Episode</span><select id="reasoningEpisodeSelect"></select></label>
+      <button class="button primary" id="runTaskReasoning" type="button">重新推理</button>
+      <a class="button secondary" href="/api/task-reasoning.json">导出 JSON</a>
+    </section>
+
+    <section class="reasoning-loading" id="reasoningLoading">
+      <span class="spinner"></span><div><strong>正在构建任务图</strong><p>连续状态 → 符号谓词 → 技能约束 → 恢复算子</p></div>
+    </section>
+
+    <div id="reasoningResults" hidden>
+      <section class="reasoning-metrics" aria-label="任务推理核心指标">
+        <div><span>完整闭环</span><strong id="reasoningVerified">—</strong><small>全部技能效果成立</small></div>
+        <div><span>可局部恢复</span><strong id="reasoningRecoverable">—</strong><small>已生成恢复算子</small></div>
+        <div><span>谓词落地覆盖</span><strong id="reasoningGrounding">—</strong><small>连续信号可验证</small></div>
+        <div><span>平均计划健康度</span><strong id="reasoningPlanHealth">—</strong><small>技能约束完成度</small></div>
+        <div><span>恢复动作</span><strong id="reasoningRecoverySteps">—</strong><small>跨全部 Episode</small></div>
+      </section>
+
+      <div class="reasoning-primary">
+        <section class="reasoning-graph-panel">
+          <header><div><h2>Grounded Operator Graph</h2><p id="reasoningEpisodeSummary">选择一条 Episode 查看技能执行链</p></div><span id="reasoningProgressLabel">0% TASK PROGRESS</span></header>
+          <div class="reasoning-graph-wrap"><div class="reasoning-graph" id="reasoningGraph"></div></div>
+        </section>
+        <aside class="reasoning-violation" id="reasoningViolation">
+          <span>FIRST VIOLATED INVARIANT</span>
+          <strong>等待轨迹推理</strong>
+          <p>系统将优先定位最早失败点，而不是只解释最终 success 标签。</p>
+        </aside>
+      </div>
+
+      <div class="reasoning-response">
+        <section class="reasoning-causal-panel">
+          <header><div><h2>失败传播链</h2><p>从首个失效谓词解释后续任务结果</p></div><span>CAUSAL TRACE</span></header>
+          <div class="reasoning-causal-chain" id="reasoningCausalChain"></div>
+        </section>
+        <section class="reasoning-recovery-panel">
+          <header><div><h2>局部恢复计划</h2><p>只恢复缺失谓词，不盲目重做整个任务</p></div><span id="reasoningRecoveryCount">0 OPERATORS</span></header>
+          <div class="reasoning-recovery-list" id="reasoningRecoveryList"></div>
+        </section>
+      </div>
+
+      <section class="reasoning-evidence-panel">
+        <header><div><h2>谓词物理证据</h2><p>True / False / Unknown 均保留来源与置信度</p></div><span>PRECONDITION / EFFECT</span></header>
+        <div class="reasoning-evidence-wrap">
+          <table class="reasoning-evidence-table">
+            <thead><tr><th>技能算子</th><th>约束类型</th><th>谓词</th><th>判定</th><th>证据</th><th>置信度</th></tr></thead>
+            <tbody id="reasoningEvidenceBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="reasoning-episode-panel">
+        <header><div><h2>跨 Episode 任务推理</h2><p>比较任务进展、首因谓词与恢复复杂度</p></div><span>SELECT TO INSPECT</span></header>
+        <div class="reasoning-episode-wrap">
+          <table class="reasoning-episode-table">
+            <thead><tr><th>Episode</th><th>状态</th><th>任务进展</th><th>计划健康度</th><th>谓词覆盖</th><th>首个失效谓词</th><th>失败技能</th><th>恢复步数</th></tr></thead>
+            <tbody id="reasoningEpisodeBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="reasoning-method">
+        <div><span>OPEN-SOURCE BASIS</span><h2>任务规划方法依据</h2></div>
+        <div id="reasoningSources"></div>
+        <p>恢复序列是可解释的规划建议，不等价于真实机器人已经成功执行；进入仿真或真机前仍需碰撞检查、控制约束和安全门。</p>
+      </section>
+    </div>
+  </main>
+
+  <main class="audit-page" id="auditPage" hidden>
+    <header class="audit-heading">
+      <div>
+        <span class="audit-kicker">DATASET QUALITY GATE</span>
+        <h1>批量数据质量审计</h1>
+        <p>对全部 Episode 使用同一 Profile 生成质量分布、故障聚合和训练准入清单，并保留来源指纹。</p>
+      </div>
+      <div class="audit-provenance">
+        <i></i><div><span id="auditAdapter">正在读取来源</span><strong id="auditDatasetName">—</strong><code id="auditSourceHash">SHA-256 —</code></div>
+      </div>
+    </header>
+
+    <section class="audit-controls" aria-label="审计筛选">
+      <label class="audit-search"><span>搜索记录</span><input id="auditSearch" type="search" placeholder="Episode、根因或故障代码"></label>
+      <label><span>质量等级</span><select id="auditGradeFilter"><option value="all">全部等级</option><option value="A">A级</option><option value="B">B级</option><option value="C">C级</option><option value="D">D级</option></select></label>
+      <label><span>故障类型</span><select id="auditIssueFilter"><option value="all">全部故障</option><option value="clean">无显著异常</option></select></label>
+      <label><span>排序方式</span><select id="auditSort"><option value="score-asc">质量分从低到高</option><option value="score-desc">质量分从高到低</option><option value="critical-desc">严重问题优先</option><option value="episode-asc">Episode 编号</option></select></label>
+      <a class="button secondary audit-export" href="/api/audit.json">导出 JSON</a>
+      <a class="button primary audit-export" href="/api/audit.csv">导出 CSV</a>
+    </section>
+
+    <section class="batch-repair-panel">
+      <header>
+        <div><span>TRAINING DATA PACKAGE</span><h2>整套数据集批量清洗</h2><p>后台逐 Episode 生成质量掩码，交付 Parquet、清洗摘要、manifest 和 ZIP 数据包。</p></div>
+        <button class="button primary" id="startBatchRepair" type="button">启动批量清洗</button>
+      </header>
+      <div class="batch-repair-job" id="batchRepairJob" hidden>
+        <div><span id="batchRepairJobId">CLEAN</span><strong id="batchRepairMessage">正在启动</strong><b id="batchRepairProgressLabel">0%</b></div>
+        <div class="job-progress"><i id="batchRepairProgressBar"></i></div>
+        <button id="cancelBatchRepair" type="button">取消作业</button>
+      </div>
+      <div class="batch-repair-result" id="batchRepairResult" hidden>
+        <div><span>数据保留率</span><strong id="batchRepairRetained">—</strong><small id="batchRepairRows">quality_valid</small></div>
+        <div><span>已处理 Episode</span><strong id="batchRepairEpisodes">—</strong><small>统一 Profile</small></div>
+        <div><span>修改行</span><strong id="batchRepairModified">—</strong><small>校正、分段或标记</small></div>
+        <div><span>风险隔离</span><strong id="batchRepairQuarantined">—</strong><small>不进入训练</small></div>
+        <div class="batch-repair-downloads"><a class="button primary" id="downloadBatchPackage" href="#">下载 ZIP</a><a class="button secondary" id="downloadBatchParquet" href="#">Parquet</a><a class="button secondary" id="downloadBatchManifest" href="#">manifest</a></div>
+      </div>
+    </section>
+
+    <div class="audit-loading" id="auditLoading"><span class="spinner"></span><div><strong>正在执行跨 Episode 审计</strong><p>汇总等级、故障、质量维度与来源指纹</p></div></div>
+    <div id="auditResults" hidden>
+      <section class="audit-metrics" aria-label="审计核心指标">
+        <div><span>Episode 总数</span><strong id="auditEpisodes">—</strong><small id="auditRows">采样点</small></div>
+        <div><span>训练就绪</span><strong id="auditReady">—</strong><small id="auditReadyRate">无严重问题且 ≥ 78</small></div>
+        <div><span>平均质量</span><strong id="auditAverage">—</strong><small>统一 Profile 评分</small></div>
+        <div><span>严重异常</span><strong id="auditCritical">—</strong><small>需复核 Episode</small></div>
+        <div><span>问题类型</span><strong id="auditIssueTypes">—</strong><small>聚合诊断代码</small></div>
+      </section>
+
+      <div class="audit-distributions">
+        <section class="audit-panel">
+          <header><div><h2>质量等级分布</h2><p>评分区间与训练准入状态</p></div><span>EPISODES</span></header>
+          <div class="grade-distribution" id="auditGradeDistribution"></div>
+        </section>
+        <section class="audit-panel">
+          <header><div><h2>五维质量均值</h2><p>定位数据集整体短板</p></div><span>SCORE / 100</span></header>
+          <div class="dimension-distribution" id="auditDimensions"></div>
+        </section>
+        <section class="audit-panel audit-issues-panel">
+          <header><div><h2>故障类型分布</h2><p>按影响 Episode 数量聚合</p></div><span id="auditFaultTotal">0 TYPES</span></header>
+          <div class="audit-issue-distribution" id="auditIssueDistribution"></div>
+        </section>
+      </div>
+
+      <section class="audit-table-section">
+        <header><div><h2>Episode 质量排名</h2><p id="auditFilterSummary">显示全部记录</p></div><span>点击记录进入单条诊断</span></header>
+        <div class="audit-table-wrap">
+          <table class="audit-table"><thead><tr><th>Episode</th><th>质量</th><th>完整性</th><th>时序</th><th>运动</th><th>同步</th><th>安全</th><th>主要发现</th><th>操作</th></tr></thead><tbody id="auditTableBody"></tbody></table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <main class="benchmark-page" id="benchmarkPage" hidden>
+    <header class="benchmark-heading">
+      <div>
+        <span class="benchmark-kicker">REPRODUCIBLE QUALITY BENCHMARKS</span>
+        <h1>诊断与清洗统计评测中心</h1>
+        <p>FaultBench 验证故障检测准确性，RepairBench 量化数据重建、过度修复、风险隔离和物理测量保持率。</p>
+      </div>
+      <div class="benchmark-status" id="benchmarkStatus">
+        <i></i><div><strong>等待运行评测</strong><span>EmbodiScope FaultBench 1.0</span></div>
+      </div>
+    </header>
+
+    <nav class="benchmark-suite-switch" aria-label="评测套件">
+      <button class="active" id="faultBenchmarkSuite" type="button">FaultBench · 故障检测</button>
+      <button id="repairBenchmarkSuite" type="button">RepairBench · 清洗质量</button>
+    </nav>
+
+    <div id="faultBenchmarkWorkspace">
+    <section class="benchmark-controls" aria-label="评测配置">
+      <label><span>诊断 Profile</span><select id="benchmarkProfile"></select></label>
+      <label><span>随机种子数量</span><select id="benchmarkSeeds"><option value="4">4 seeds</option><option value="8" selected>8 seeds</option><option value="12">12 seeds</option><option value="20">20 seeds</option></select></label>
+      <button class="button primary" id="runBenchmark" type="button">运行统计评测</button>
+      <button class="button secondary" id="exportBenchmark" type="button" disabled>导出 JSON</button>
+      <p id="benchmarkProtocol">每个种子包含 1 条正常轨迹和 21 条故障轨迹。</p>
+    </section>
+
+    <section class="benchmark-loading" id="benchmarkLoading" hidden>
+      <span class="spinner"></span><div><strong>正在执行 FaultBench</strong><p>逐条运行正式诊断器并汇总分类、定位与延迟指标</p></div>
+    </section>
+
+    <div id="benchmarkResults" hidden>
+      <section class="benchmark-metrics" aria-label="Benchmark 核心指标">
+        <div><span>Macro F1</span><strong id="benchmarkF1">—</strong><small id="benchmarkF1Delta">对比固定阈值</small></div>
+        <div><span>Macro Precision</span><strong id="benchmarkPrecision">—</strong><small>跨故障类别宏平均</small></div>
+        <div><span>Macro Recall</span><strong id="benchmarkRecall">—</strong><small id="benchmarkRecallDelta">对比固定阈值</small></div>
+        <div><span>正常轨迹误报率</span><strong id="benchmarkFpr">—</strong><small>Nominal false positive</small></div>
+        <div><span>分析延迟 p95</span><strong id="benchmarkLatency">—</strong><small>单条 600 行轨迹</small></div>
+      </section>
+
+      <section class="benchmark-evidence">
+        <div><span>评测样本</span><strong id="benchmarkSamples">—</strong><small>独立轨迹</small></div>
+        <div><span>同步偏移 MAE</span><strong id="benchmarkSyncMae">—</strong><small>毫秒</small></div>
+        <div><span>时间定位中位误差</span><strong id="benchmarkLocation">—</strong><small>毫秒</small></div>
+        <div><span>Exact Match</span><strong id="benchmarkExact">—</strong><small>无多报漏报</small></div>
+        <div class="benchmark-baseline"><span>固定阈值 Baseline</span><strong id="benchmarkBaseline">—</strong><small id="benchmarkBaselineDetail">Macro F1</small></div>
+      </section>
+
+      <div class="benchmark-layout">
+        <section class="benchmark-table-section">
+          <header><div><h2>逐类诊断结果</h2><p>每类故障合并三个强度与全部随机种子</p></div><span>PRECISION / RECALL / F1</span></header>
+          <div class="benchmark-table-wrap">
+            <table class="benchmark-table">
+              <thead><tr><th>故障类型</th><th>样本</th><th>Precision</th><th>Recall</th><th>F1</th><th>检出状态</th></tr></thead>
+              <tbody id="benchmarkClassBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="benchmark-method">
+          <span>PROTOCOL</span>
+          <h2>可复现评测协议</h2>
+          <dl>
+            <div><dt>数据基线</dt><dd>600 行多模态操作轨迹</dd></div>
+            <div><dt>故障类别</dt><dd>延迟、碰撞、突跳、缺口、丢帧、卡滞、滑脱</dd></div>
+            <div><dt>强度控制</dt><dd>轻微 / 中等 / 严重</dd></div>
+            <div><dt>对照方法</dt><dd>保守固定阈值规则</dd></div>
+          </dl>
+          <p id="benchmarkProfileDescription">Profile 阈值、物理下限和工作空间随结果一并导出。</p>
+        </aside>
+      </div>
+
+      <section class="benchmark-table-section benchmark-matrix-section">
+        <header><div><h2>故障强度检出矩阵</h2><p>展示鲁棒诊断器与固定阈值在边界故障上的差异</p></div><span>DETECTION RATE</span></header>
+        <div class="benchmark-table-wrap">
+          <table class="benchmark-table benchmark-matrix">
+            <thead><tr><th>故障</th><th>轻微</th><th>中等</th><th>严重</th><th>固定阈值轻微档</th></tr></thead>
+            <tbody id="benchmarkMatrixBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+    </div>
+
+    <div id="repairBenchmarkWorkspace" hidden>
+      <section class="benchmark-controls repair-benchmark-controls" aria-label="清洗评测配置">
+        <label><span>诊断 Profile</span><select id="repairBenchmarkProfile"></select></label>
+        <label><span>随机种子数量</span><select id="repairBenchmarkSeeds"><option value="2">2 seeds</option><option value="4" selected>4 seeds</option><option value="8">8 seeds</option><option value="12">12 seeds</option></select></label>
+        <button class="button primary" id="runRepairBenchmark" type="button">运行清洗评测</button>
+        <button class="button secondary" id="exportRepairBenchmark" type="button" disabled>导出 JSON</button>
+        <p>每个种子包含 1 条正常轨迹，以及 5 类治理场景的 3 档强度样本。</p>
+      </section>
+
+      <section class="benchmark-loading" id="repairBenchmarkLoading" hidden>
+        <span class="spinner"></span><div><strong>正在执行 RepairBench</strong><p>逐条生成清洗产物并核对原始真值、质量掩码和物理测量</p></div>
+      </section>
+
+      <div id="repairBenchmarkResults" hidden>
+        <section class="benchmark-metrics repair-benchmark-metrics" aria-label="RepairBench 核心指标">
+          <div><span>动作成功率</span><strong id="repairBenchmarkSuccess">—</strong><small>五类治理行为</small></div>
+          <div><span>重建 RMSE</span><strong id="repairBenchmarkRmse">—</strong><small>短缺口、突跳与同步</small></div>
+          <div><span>过度修复率</span><strong id="repairBenchmarkOvercorrection">—</strong><small>正常轨迹信号单元格</small></div>
+          <div><span>风险隔离召回率</span><strong id="repairBenchmarkIsolation">—</strong><small>真实接触力窗口</small></div>
+          <div><span>物理测量保持率</span><strong id="repairBenchmarkPreservation">—</strong><small>隔离但不篡改</small></div>
+        </section>
+
+        <section class="benchmark-evidence repair-benchmark-evidence">
+          <div><span>评测样本</span><strong id="repairBenchmarkSamples">—</strong><small>独立轨迹</small></div>
+          <div><span>同步残差 MAE</span><strong id="repairBenchmarkSync">—</strong><small>毫秒</small></div>
+          <div><span>误隔离率</span><strong id="repairBenchmarkFalseQuarantine">—</strong><small>正常轨迹</small></div>
+          <div><span>平均数据保留率</span><strong id="repairBenchmarkRetained">—</strong><small>全部故障样本</small></div>
+          <div class="benchmark-baseline"><span>清洗延迟 p95</span><strong id="repairBenchmarkLatency">—</strong><small>单条 600 行轨迹</small></div>
+        </section>
+
+        <div class="benchmark-layout">
+          <section class="benchmark-table-section">
+            <header><div><h2>逐类清洗结果</h2><p>每类合并三个强度与全部随机种子</p></div><span>SUCCESS / ERROR / RETENTION</span></header>
+            <div class="benchmark-table-wrap"><table class="benchmark-table repair-class-table"><thead><tr><th>治理场景</th><th>样本</th><th>成功率</th><th>重建 RMSE</th><th>保持/隔离</th><th>保留率</th></tr></thead><tbody id="repairBenchmarkClassBody"></tbody></table></div>
+          </section>
+          <aside class="benchmark-method repair-gates">
+            <span>QUALITY GATES</span><h2>清洗质量门</h2><div id="repairBenchmarkGates"></div>
+            <p>所有质量门必须同时通过，才能证明修复有效且未破坏正常数据或真实物理事件。</p>
+          </aside>
+        </div>
+
+        <section class="benchmark-table-section benchmark-matrix-section">
+          <header><div><h2>清洗强度矩阵</h2><p>比较轻微、中等和严重故障下的动作成功率与数据保留率</p></div><span>SUCCESS RATE</span></header>
+          <div class="benchmark-table-wrap"><table class="benchmark-table benchmark-matrix"><thead><tr><th>治理场景</th><th>轻微</th><th>中等</th><th>严重</th><th>策略</th></tr></thead><tbody id="repairBenchmarkMatrixBody"></tbody></table></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal-backdrop" id="datasetLibraryModal" hidden>
+    <section class="dataset-library-modal" role="dialog" aria-modal="true" aria-labelledby="datasetLibraryTitle">
+      <header>
+        <div><span>DATASET LIBRARY</span><h2 id="datasetLibraryTitle">多来源具身数据集</h2></div>
+        <button class="modal-close" id="closeDatasetLibrary" type="button" aria-label="关闭">×</button>
+      </header>
+      <div class="library-summary">
+        <div><strong id="libraryDatasetTotal">—</strong><span>可用数据集</span></div>
+        <div><strong id="libraryEpisodeTotal">—</strong><span>Episodes</span></div>
+        <div><strong id="libraryRowTotal">—</strong><span>采样点</span></div>
+        <div><strong>4</strong><span>数据格式</span></div>
+      </div>
+      <div class="dataset-library-grid" id="datasetLibraryGrid"></div>
+      <footer><span>本地白名单加载 · 来源与许可证可追溯</span><span>Hugging Face · ManiSkill · ROS2</span></footer>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="adapterModal" hidden>
+    <section class="adapter-modal" role="dialog" aria-modal="true" aria-labelledby="adapterModalTitle">
+      <header>
+        <div><span>DATA ADAPTERS</span><h2 id="adapterModalTitle">开源数据生态</h2></div>
+        <button class="modal-close" id="closeAdapterModal" type="button" aria-label="关闭">×</button>
+      </header>
+      <div class="adapter-current">
+        <span>当前来源</span><strong id="modalCurrentSource">通用 CSV</strong><small id="modalSourceWarnings">格式已标准化</small>
+      </div>
+      <div class="adapter-grid" id="adapterGrid"></div>
+      <footer><span>统一时序 Schema · Three.js 空间回放 · Rerun 导出</span><span>25 MB 上传限制</span></footer>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script type="module" src="/app.js?v=2.3.0"></script>
+</body>
+</html>

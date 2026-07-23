@@ -1,0 +1,74 @@
+{
+  "desktop_video": {
+    "size": [
+      685,
+      514
+    ],
+    "mean_rgb": [
+      111.48,
+      87.01,
+      73.46
+    ],
+    "stddev_rgb": [
+      78.06,
+      56.24,
+      52.05
+    ],
+    "non_dark_ratio": 0.7329,
+    "nonblank": true
+  },
+  "desktop_canvas": {
+    "size": [
+      685,
+      514
+    ],
+    "mean_rgb": [
+      54.35,
+      52.5,
+      45.43
+    ],
+    "stddev_rgb": [
+      49.44,
+      39.16,
+      30.44
+    ],
+    "non_dark_ratio": 0.3884,
+    "nonblank": true
+  },
+  "mobile_video": {
+    "size": [
+      350,
+      263
+    ],
+    "mean_rgb": [
+      111.02,
+      89.92,
+      77.85
+    ],
+    "stddev_rgb": [
+      80.67,
+      63.3,
+      60.65
+    ],
+    "non_dark_ratio": 0.7137,
+    "nonblank": true
+  },
+  "mobile_canvas": {
+    "size": [
+      350,
+      263
+    ],
+    "mean_rgb": [
+      59.61,
+      59.41,
+      53.13
+    ],
+    "stddev_rgb": [
+      59.75,
+      53.74,
+      49.42
+    ],
+    "non_dark_ratio": 0.4475,
+    "nonblank": true
+  }
+}

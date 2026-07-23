@@ -1,0 +1,462 @@
+{
+  "protocol": {
+    "name": "EmbodiScope FaultBench",
+    "version": "1.0",
+    "seed_count": 8,
+    "intensity_levels": 3,
+    "fault_classes": 7,
+    "sample_count": 176,
+    "rows_per_sample": 600,
+    "profile": {
+      "profile_id": "generic-manipulator",
+      "name": "通用操作机器人",
+      "description": "面向未知机器人日志的保守默认值，统计阈值与物理下限联合生效。",
+      "robot": "Generic manipulator",
+      "joint_velocity_mad_scale": 7.0,
+      "joint_velocity_floor": 3.5,
+      "stuck_speed_threshold": 0.004,
+      "stuck_min_duration": 1.2,
+      "sync_max_lag_seconds": 0.5,
+      "sync_warning_seconds": 0.08,
+      "sync_critical_seconds": 0.15,
+      "sync_min_confidence": 0.35,
+      "force_mad_scale": 8.0,
+      "force_floor": 35.0,
+      "gap_period_multiplier": 2.5,
+      "gap_extra_seconds": 0.04,
+      "frame_drop_min_duration": 0.04,
+      "slip_gripper_closed": 0.3,
+      "slip_distance_threshold": 0.1,
+      "slip_step_threshold": 0.002,
+      "workspace_x": [
+        -1.2,
+        1.2
+      ],
+      "workspace_y": [
+        -1.2,
+        1.2
+      ],
+      "workspace_z": [
+        -0.05,
+        1.8
+      ],
+      "workspace_bounds": {
+        "ee_x": [
+          -1.2,
+          1.2
+        ],
+        "ee_y": [
+          -1.2,
+          1.2
+        ],
+        "ee_z": [
+          -0.05,
+          1.8
+        ]
+      }
+    },
+    "python": "3.12.4"
+  },
+  "metrics": {
+    "macro_precision": 0.9714,
+    "macro_recall": 1.0,
+    "macro_f1": 0.9841,
+    "exact_match": 0.9659,
+    "nominal_false_positive_rate": 0.0,
+    "per_class": [
+      {
+        "code": "SENSOR_DESYNC",
+        "precision": 0.8,
+        "recall": 1.0,
+        "f1": 0.8889,
+        "support": 24,
+        "tp": 24,
+        "fp": 6,
+        "fn": 0
+      },
+      {
+        "code": "FORCE_SPIKE",
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 0
+      },
+      {
+        "code": "JOINT_JUMP",
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 0
+      },
+      {
+        "code": "TIMESTAMP_GAP",
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 0
+      },
+      {
+        "code": "FRAME_DROP",
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 0
+      },
+      {
+        "code": "ROBOT_STUCK",
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 0
+      },
+      {
+        "code": "GRASP_SLIP",
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 0
+      }
+    ]
+  },
+  "baseline": {
+    "macro_precision": 0.961,
+    "macro_recall": 0.7917,
+    "macro_f1": 0.8613,
+    "exact_match": 0.7784,
+    "nominal_false_positive_rate": 0.0,
+    "per_class": [
+      {
+        "code": "SENSOR_DESYNC",
+        "precision": 0.7273,
+        "recall": 0.6667,
+        "f1": 0.6957,
+        "support": 24,
+        "tp": 16,
+        "fp": 6,
+        "fn": 8
+      },
+      {
+        "code": "FORCE_SPIKE",
+        "precision": 1.0,
+        "recall": 0.6667,
+        "f1": 0.8,
+        "support": 24,
+        "tp": 16,
+        "fp": 0,
+        "fn": 8
+      },
+      {
+        "code": "JOINT_JUMP",
+        "precision": 1.0,
+        "recall": 0.6667,
+        "f1": 0.8,
+        "support": 24,
+        "tp": 16,
+        "fp": 0,
+        "fn": 8
+      },
+      {
+        "code": "TIMESTAMP_GAP",
+        "precision": 1.0,
+        "recall": 0.875,
+        "f1": 0.9333,
+        "support": 24,
+        "tp": 21,
+        "fp": 0,
+        "fn": 3
+      },
+      {
+        "code": "FRAME_DROP",
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 0
+      },
+      {
+        "code": "ROBOT_STUCK",
+        "precision": 1.0,
+        "recall": 0.6667,
+        "f1": 0.8,
+        "support": 24,
+        "tp": 16,
+        "fp": 0,
+        "fn": 8
+      },
+      {
+        "code": "GRASP_SLIP",
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 0
+      }
+    ]
+  },
+  "comparison": {
+    "macro_f1_delta": 0.1228,
+    "recall_delta": 0.2083,
+    "false_positive_delta": 0.0
+  },
+  "performance": {
+    "latency_p50_ms": 7.18,
+    "latency_p95_ms": 8.42,
+    "localization_median_error_ms": 0.0,
+    "sync_offset_mae_ms": 0.0
+  },
+  "matrix": [
+    {
+      "fault_id": "sensor-delay",
+      "fault_name": "视觉延迟",
+      "code": "SENSOR_DESYNC",
+      "intensity": "轻微",
+      "value": 0.1,
+      "unit": "s",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 0.0
+    },
+    {
+      "fault_id": "sensor-delay",
+      "fault_name": "视觉延迟",
+      "code": "SENSOR_DESYNC",
+      "intensity": "中等",
+      "value": 0.16,
+      "unit": "s",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "sensor-delay",
+      "fault_name": "视觉延迟",
+      "code": "SENSOR_DESYNC",
+      "intensity": "严重",
+      "value": 0.24,
+      "unit": "s",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "force-spike",
+      "fault_name": "接触力峰值",
+      "code": "FORCE_SPIKE",
+      "intensity": "轻微",
+      "value": 42.0,
+      "unit": "N",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 0.0
+    },
+    {
+      "fault_id": "force-spike",
+      "fault_name": "接触力峰值",
+      "code": "FORCE_SPIKE",
+      "intensity": "中等",
+      "value": 55.0,
+      "unit": "N",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "force-spike",
+      "fault_name": "接触力峰值",
+      "code": "FORCE_SPIKE",
+      "intensity": "严重",
+      "value": 75.0,
+      "unit": "N",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "joint-jump",
+      "fault_name": "关节突跳",
+      "code": "JOINT_JUMP",
+      "intensity": "轻微",
+      "value": 0.09,
+      "unit": "rad",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 0.0
+    },
+    {
+      "fault_id": "joint-jump",
+      "fault_name": "关节突跳",
+      "code": "JOINT_JUMP",
+      "intensity": "中等",
+      "value": 0.18,
+      "unit": "rad",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "joint-jump",
+      "fault_name": "关节突跳",
+      "code": "JOINT_JUMP",
+      "intensity": "严重",
+      "value": 0.35,
+      "unit": "rad",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "timestamp-gap",
+      "fault_name": "采样缺口",
+      "code": "TIMESTAMP_GAP",
+      "intensity": "轻微",
+      "value": 0.08,
+      "unit": "s",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 0.625
+    },
+    {
+      "fault_id": "timestamp-gap",
+      "fault_name": "采样缺口",
+      "code": "TIMESTAMP_GAP",
+      "intensity": "中等",
+      "value": 0.16,
+      "unit": "s",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "timestamp-gap",
+      "fault_name": "采样缺口",
+      "code": "TIMESTAMP_GAP",
+      "intensity": "严重",
+      "value": 0.28,
+      "unit": "s",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "frame-drop",
+      "fault_name": "连续丢帧",
+      "code": "FRAME_DROP",
+      "intensity": "轻微",
+      "value": 4.0,
+      "unit": "frames",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "frame-drop",
+      "fault_name": "连续丢帧",
+      "code": "FRAME_DROP",
+      "intensity": "中等",
+      "value": 7.0,
+      "unit": "frames",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "frame-drop",
+      "fault_name": "连续丢帧",
+      "code": "FRAME_DROP",
+      "intensity": "严重",
+      "value": 12.0,
+      "unit": "frames",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "robot-stuck",
+      "fault_name": "执行卡滞",
+      "code": "ROBOT_STUCK",
+      "intensity": "轻微",
+      "value": 1.4,
+      "unit": "s",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 0.0
+    },
+    {
+      "fault_id": "robot-stuck",
+      "fault_name": "执行卡滞",
+      "code": "ROBOT_STUCK",
+      "intensity": "中等",
+      "value": 2.0,
+      "unit": "s",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "robot-stuck",
+      "fault_name": "执行卡滞",
+      "code": "ROBOT_STUCK",
+      "intensity": "严重",
+      "value": 2.8,
+      "unit": "s",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "grasp-slip",
+      "fault_name": "抓取滑脱",
+      "code": "GRASP_SLIP",
+      "intensity": "轻微",
+      "value": 0.13,
+      "unit": "m",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "grasp-slip",
+      "fault_name": "抓取滑脱",
+      "code": "GRASP_SLIP",
+      "intensity": "中等",
+      "value": 0.18,
+      "unit": "m",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    },
+    {
+      "fault_id": "grasp-slip",
+      "fault_name": "抓取滑脱",
+      "code": "GRASP_SLIP",
+      "intensity": "严重",
+      "value": 0.24,
+      "unit": "m",
+      "support": 8,
+      "detection_rate": 1.0,
+      "baseline_detection_rate": 1.0
+    }
+  ]
+}

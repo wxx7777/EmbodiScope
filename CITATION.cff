@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use EmbodiScope, please cite this software release."
+title: "EmbodiScope: Reproducible Diagnosis and Recovery Validation for Embodied-AI Experiments"
+type: software
+authors:
+  - given-names: "Xiaoxu"
+    family-names: "Wang"
+version: 2.3.0
+date-released: 2026-07-23
+license: MIT
+abstract: >-
+  EmbodiScope unifies multimodal embodied-agent data auditing, synchronized
+  failure diagnosis, task-predicate reasoning, conservative data repair, and
+  paired physical-simulation validation of local recovery interventions.
+keywords:
+  - embodied intelligence
+  - robotics
+  - failure diagnosis
+  - multimodal data
+  - recovery validation

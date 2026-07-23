@@ -1,0 +1,476 @@
+{
+  "benchmark": "RecoveryBench",
+  "version": "1.0",
+  "created_at": 1784737470.7784317,
+  "protocol": {
+    "design": "paired counterfactual physical simulation",
+    "variants_per_trial": [
+      "failure",
+      "recovered"
+    ],
+    "scenarios": [
+      "collision",
+      "gripper-failure",
+      "grasp-slip"
+    ],
+    "seeds": [
+      7,
+      9,
+      10
+    ],
+    "horizon": 140,
+    "video_recording": false,
+    "safety_invariant": "force <= 36.0 N for every evaluated frame",
+    "claim_boundary": "Task recovery and safety are reported independently.",
+    "seed_admission": "All paired trials must contain the controlled fault signature.",
+    "excluded_seeds": [
+      {
+        "seed": 8,
+        "scenario": "collision",
+        "reason": "paired trial did not contain an admissible controlled fault",
+        "failed_pair_checks": [
+          "fault_signature"
+        ],
+        "failure_rows": 5,
+        "recovered_rows": 5,
+        "failure_success": true,
+        "recovered_success": true
+      }
+    ]
+  },
+  "summary": {
+    "trials": 9,
+    "task_recovery": {
+      "successes": 8,
+      "total": 9,
+      "rate": 0.8889,
+      "ci95": {
+        "method": "Wilson score",
+        "confidence": 0.95,
+        "lower": 0.565,
+        "upper": 0.9801
+      }
+    },
+    "pair_integrity": {
+      "successes": 9,
+      "total": 9,
+      "rate": 1.0
+    },
+    "online_trigger_coverage": {
+      "successes": 9,
+      "total": 9,
+      "rate": 1.0
+    },
+    "episode_safety": {
+      "successes": 6,
+      "total": 9,
+      "rate": 0.6667
+    },
+    "post_intervention_safety": {
+      "successes": 9,
+      "total": 9,
+      "rate": 1.0
+    },
+    "recovery_latency_s": {
+      "mean": 3.5556,
+      "p95": 3.93
+    },
+    "path_overhead_m": {
+      "mean": 0.168,
+      "p95": 0.2403
+    },
+    "operator_completion_rate": {
+      "mean": 100.0
+    }
+  },
+  "per_scenario": [
+    {
+      "scenario": "collision",
+      "scenario_name": "碰撞注入",
+      "trials": 3,
+      "task_recovery": {
+        "successes": 2,
+        "total": 3,
+        "rate": 0.6667,
+        "ci95": {
+          "method": "Wilson score",
+          "confidence": 0.95,
+          "lower": 0.2077,
+          "upper": 0.9385
+        }
+      },
+      "pair_integrity": {
+        "successes": 3,
+        "total": 3,
+        "rate": 1.0
+      },
+      "online_trigger_coverage": {
+        "successes": 3,
+        "total": 3,
+        "rate": 1.0
+      },
+      "episode_safety": {
+        "successes": 0,
+        "total": 3,
+        "rate": 0.0
+      },
+      "post_intervention_safety": {
+        "successes": 3,
+        "total": 3,
+        "rate": 1.0
+      },
+      "recovery_latency_s": {
+        "mean": 3.7333,
+        "p95": 3.88
+      },
+      "path_overhead_m": {
+        "mean": 0.0904,
+        "p95": 0.181
+      },
+      "operator_completion_rate": {
+        "mean": 100.0
+      }
+    },
+    {
+      "scenario": "gripper-failure",
+      "scenario_name": "夹爪执行器失效",
+      "trials": 3,
+      "task_recovery": {
+        "successes": 3,
+        "total": 3,
+        "rate": 1.0,
+        "ci95": {
+          "method": "Wilson score",
+          "confidence": 0.95,
+          "lower": 0.4385,
+          "upper": 1.0
+        }
+      },
+      "pair_integrity": {
+        "successes": 3,
+        "total": 3,
+        "rate": 1.0
+      },
+      "online_trigger_coverage": {
+        "successes": 3,
+        "total": 3,
+        "rate": 1.0
+      },
+      "episode_safety": {
+        "successes": 3,
+        "total": 3,
+        "rate": 1.0
+      },
+      "post_intervention_safety": {
+        "successes": 3,
+        "total": 3,
+        "rate": 1.0
+      },
+      "recovery_latency_s": {
+        "mean": 3.0333,
+        "p95": 3.18
+      },
+      "path_overhead_m": {
+        "mean": 0.1791,
+        "p95": 0.184
+      },
+      "operator_completion_rate": {
+        "mean": 100.0
+      }
+    },
+    {
+      "scenario": "grasp-slip",
+      "scenario_name": "抓取滑脱",
+      "trials": 3,
+      "task_recovery": {
+        "successes": 3,
+        "total": 3,
+        "rate": 1.0,
+        "ci95": {
+          "method": "Wilson score",
+          "confidence": 0.95,
+          "lower": 0.4385,
+          "upper": 1.0
+        }
+      },
+      "pair_integrity": {
+        "successes": 3,
+        "total": 3,
+        "rate": 1.0
+      },
+      "online_trigger_coverage": {
+        "successes": 3,
+        "total": 3,
+        "rate": 1.0
+      },
+      "episode_safety": {
+        "successes": 3,
+        "total": 3,
+        "rate": 1.0
+      },
+      "post_intervention_safety": {
+        "successes": 3,
+        "total": 3,
+        "rate": 1.0
+      },
+      "recovery_latency_s": {
+        "mean": 3.9,
+        "p95": 3.945
+      },
+      "path_overhead_m": {
+        "mean": 0.2347,
+        "p95": 0.2422
+      },
+      "operator_completion_rate": {
+        "mean": 100.0
+      }
+    }
+  ],
+  "matrix": [
+    {
+      "seed": 7,
+      "scenarios": {
+        "collision": {
+          "task_recovery": true,
+          "episode_safety": false,
+          "post_intervention_safety": true,
+          "online_trigger": true,
+          "recovery_latency": 3.6,
+          "trigger_type": "force-threshold"
+        },
+        "gripper-failure": {
+          "task_recovery": true,
+          "episode_safety": true,
+          "post_intervention_safety": true,
+          "online_trigger": true,
+          "recovery_latency": 2.9,
+          "trigger_type": "gripper-command-response-mismatch"
+        },
+        "grasp-slip": {
+          "task_recovery": true,
+          "episode_safety": true,
+          "post_intervention_safety": true,
+          "online_trigger": true,
+          "recovery_latency": 3.9,
+          "trigger_type": "grasp-state-transition"
+        }
+      }
+    },
+    {
+      "seed": 9,
+      "scenarios": {
+        "collision": {
+          "task_recovery": true,
+          "episode_safety": false,
+          "post_intervention_safety": true,
+          "online_trigger": true,
+          "recovery_latency": 3.7,
+          "trigger_type": "force-threshold"
+        },
+        "gripper-failure": {
+          "task_recovery": true,
+          "episode_safety": true,
+          "post_intervention_safety": true,
+          "online_trigger": true,
+          "recovery_latency": 3.0,
+          "trigger_type": "gripper-command-response-mismatch"
+        },
+        "grasp-slip": {
+          "task_recovery": true,
+          "episode_safety": true,
+          "post_intervention_safety": true,
+          "online_trigger": true,
+          "recovery_latency": 3.85,
+          "trigger_type": "grasp-state-transition"
+        }
+      }
+    },
+    {
+      "seed": 10,
+      "scenarios": {
+        "collision": {
+          "task_recovery": false,
+          "episode_safety": false,
+          "post_intervention_safety": true,
+          "online_trigger": true,
+          "recovery_latency": 3.9,
+          "trigger_type": "force-threshold"
+        },
+        "gripper-failure": {
+          "task_recovery": true,
+          "episode_safety": true,
+          "post_intervention_safety": true,
+          "online_trigger": true,
+          "recovery_latency": 3.2,
+          "trigger_type": "gripper-command-response-mismatch"
+        },
+        "grasp-slip": {
+          "task_recovery": true,
+          "episode_safety": true,
+          "post_intervention_safety": true,
+          "online_trigger": true,
+          "recovery_latency": 3.95,
+          "trigger_type": "grasp-state-transition"
+        }
+      }
+    }
+  ],
+  "trials": [
+    {
+      "scenario": "collision",
+      "scenario_name": "碰撞注入",
+      "seed": 7,
+      "task_recovery": true,
+      "episode_safety": false,
+      "post_intervention_safety": true,
+      "pair_integrity": true,
+      "online_trigger": true,
+      "trigger_type": "force-threshold",
+      "recovery_latency": 3.6,
+      "path_overhead": 0.1817,
+      "operator_completion_rate": 100.0,
+      "episode_peak_force_n": 290.2,
+      "post_intervention_peak_force_n": 27.938,
+      "fingerprint": "19ac89ac1b7c7c86"
+    },
+    {
+      "scenario": "gripper-failure",
+      "scenario_name": "夹爪执行器失效",
+      "seed": 7,
+      "task_recovery": true,
+      "episode_safety": true,
+      "post_intervention_safety": true,
+      "pair_integrity": true,
+      "online_trigger": true,
+      "trigger_type": "gripper-command-response-mismatch",
+      "recovery_latency": 2.9,
+      "path_overhead": 0.1736,
+      "operator_completion_rate": 100.0,
+      "episode_peak_force_n": 27.94,
+      "post_intervention_peak_force_n": 27.94,
+      "fingerprint": "704385a1602a095e"
+    },
+    {
+      "scenario": "grasp-slip",
+      "scenario_name": "抓取滑脱",
+      "seed": 7,
+      "task_recovery": true,
+      "episode_safety": true,
+      "post_intervention_safety": true,
+      "pair_integrity": true,
+      "online_trigger": true,
+      "trigger_type": "grasp-state-transition",
+      "recovery_latency": 3.9,
+      "path_overhead": 0.2247,
+      "operator_completion_rate": 100.0,
+      "episode_peak_force_n": 35.263,
+      "post_intervention_peak_force_n": 35.263,
+      "fingerprint": "a5f12b5c4d22efec"
+    },
+    {
+      "scenario": "collision",
+      "scenario_name": "碰撞注入",
+      "seed": 9,
+      "task_recovery": true,
+      "episode_safety": false,
+      "post_intervention_safety": true,
+      "pair_integrity": true,
+      "online_trigger": true,
+      "trigger_type": "force-threshold",
+      "recovery_latency": 3.7,
+      "path_overhead": 0.1748,
+      "operator_completion_rate": 100.0,
+      "episode_peak_force_n": 334.704,
+      "post_intervention_peak_force_n": 34.022,
+      "fingerprint": "e5a069dcbf5562be"
+    },
+    {
+      "scenario": "gripper-failure",
+      "scenario_name": "夹爪执行器失效",
+      "seed": 9,
+      "task_recovery": true,
+      "episode_safety": true,
+      "post_intervention_safety": true,
+      "pair_integrity": true,
+      "online_trigger": true,
+      "trigger_type": "gripper-command-response-mismatch",
+      "recovery_latency": 3.0,
+      "path_overhead": 0.1845,
+      "operator_completion_rate": 100.0,
+      "episode_peak_force_n": 34.036,
+      "post_intervention_peak_force_n": 34.036,
+      "fingerprint": "98ce04951c2e6c2c"
+    },
+    {
+      "scenario": "grasp-slip",
+      "scenario_name": "抓取滑脱",
+      "seed": 9,
+      "task_recovery": true,
+      "episode_safety": true,
+      "post_intervention_safety": true,
+      "pair_integrity": true,
+      "online_trigger": true,
+      "trigger_type": "grasp-state-transition",
+      "recovery_latency": 3.85,
+      "path_overhead": 0.2428,
+      "operator_completion_rate": 100.0,
+      "episode_peak_force_n": 34.045,
+      "post_intervention_peak_force_n": 27.852,
+      "fingerprint": "30f58e7b85d36a39"
+    },
+    {
+      "scenario": "collision",
+      "scenario_name": "碰撞注入",
+      "seed": 10,
+      "task_recovery": false,
+      "episode_safety": false,
+      "post_intervention_safety": true,
+      "pair_integrity": true,
+      "online_trigger": true,
+      "trigger_type": "force-threshold",
+      "recovery_latency": 3.9,
+      "path_overhead": -0.0854,
+      "operator_completion_rate": 100.0,
+      "episode_peak_force_n": 121.029,
+      "post_intervention_peak_force_n": 27.959,
+      "fingerprint": "5232878c32108d28"
+    },
+    {
+      "scenario": "gripper-failure",
+      "scenario_name": "夹爪执行器失效",
+      "seed": 10,
+      "task_recovery": true,
+      "episode_safety": true,
+      "post_intervention_safety": true,
+      "pair_integrity": true,
+      "online_trigger": true,
+      "trigger_type": "gripper-command-response-mismatch",
+      "recovery_latency": 3.2,
+      "path_overhead": 0.1791,
+      "operator_completion_rate": 100.0,
+      "episode_peak_force_n": 27.963,
+      "post_intervention_peak_force_n": 27.963,
+      "fingerprint": "fbb9fcd8fba5f991"
+    },
+    {
+      "scenario": "grasp-slip",
+      "scenario_name": "抓取滑脱",
+      "seed": 10,
+      "task_recovery": true,
+      "episode_safety": true,
+      "post_intervention_safety": true,
+      "pair_integrity": true,
+      "online_trigger": true,
+      "trigger_type": "grasp-state-transition",
+      "recovery_latency": 3.95,
+      "path_overhead": 0.2365,
+      "operator_completion_rate": 100.0,
+      "episode_peak_force_n": 27.963,
+      "post_intervention_peak_force_n": 27.827,
+      "fingerprint": "be1ff9d5d25c4c8c"
+    }
+  ],
+  "downloads": {
+    "json": "/api/recovery-benchmark/result/recovery-bench-20260723-002311-2c10fb"
+  }
+}

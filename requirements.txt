@@ -1,0 +1,11 @@
+numpy>=1.24,<2
+pandas>=2.0
+pytest>=8.0
+pyarrow>=14.0,<26
+h5py>=3.11,<4
+rerun-sdk==0.22.1
+# Optional real-simulation runtime: pip install -e .[simulation]
+
+# Optional robotics adapters
+rosbags>=0.11,<1
+mcap>=1.2,<2

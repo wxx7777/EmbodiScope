@@ -1,0 +1,78 @@
+rosbag2_bagfile_information:
+  compression_format: ''
+  compression_mode: ''
+  custom_data: null
+  duration:
+    nanoseconds: 11980000000
+  files:
+  - duration:
+      nanoseconds: 11980000000
+    message_count: 4201
+    path: demo_ros2_mcap.mcap
+    starting_time:
+      nanoseconds_since_epoch: 1000000000
+  message_count: 4201
+  relative_file_paths:
+  - demo_ros2_mcap.mcap
+  ros_distro: rosbags
+  starting_time:
+    nanoseconds_since_epoch: 1000000000
+  storage_identifier: mcap
+  topics_with_message_count:
+  - message_count: 600
+    topic_metadata:
+      name: /joint_states
+      offered_qos_profiles: []
+      serialization_format: cdr
+      type: sensor_msgs/msg/JointState
+      type_description_hash: RIHS01_a13ee3a330e346c9d87b5aa18d24e11690752bd33a0350f11c5882bc9179260e
+  - message_count: 600
+    topic_metadata:
+      name: /ee_pose
+      offered_qos_profiles: []
+      serialization_format: cdr
+      type: geometry_msgs/msg/PoseStamped
+      type_description_hash: RIHS01_10f3786d7d40fd2b54367835614bff85d4ad3b5dab62bf8bca0cc232d73b4cd8
+  - message_count: 600
+    topic_metadata:
+      name: /wrench
+      offered_qos_profiles: []
+      serialization_format: cdr
+      type: geometry_msgs/msg/WrenchStamped
+      type_description_hash: RIHS01_8dc3deaf06b2ab281f9f9a742a8961c328ca7cec16e3fd6586d3a5c83fa78f77
+  - message_count: 600
+    topic_metadata:
+      name: /camera_motion
+      offered_qos_profiles: []
+      serialization_format: cdr
+      type: std_msgs/msg/Float32
+      type_description_hash: RIHS01_7170d3d8f841f7be3172ce5f4f59f3a4d7f63b0447e8b33327601ad64d83d6e2
+  - message_count: 600
+    topic_metadata:
+      name: /gripper
+      offered_qos_profiles: []
+      serialization_format: cdr
+      type: std_msgs/msg/Float32
+      type_description_hash: RIHS01_7170d3d8f841f7be3172ce5f4f59f3a4d7f63b0447e8b33327601ad64d83d6e2
+  - message_count: 600
+    topic_metadata:
+      name: /object_distance
+      offered_qos_profiles: []
+      serialization_format: cdr
+      type: std_msgs/msg/Float32
+      type_description_hash: RIHS01_7170d3d8f841f7be3172ce5f4f59f3a4d7f63b0447e8b33327601ad64d83d6e2
+  - message_count: 600
+    topic_metadata:
+      name: /task_phase
+      offered_qos_profiles: []
+      serialization_format: cdr
+      type: std_msgs/msg/String
+      type_description_hash: RIHS01_df668c740482bbd48fb39d76a70dfd4bd59db1288021743503259e948f6b1a18
+  - message_count: 1
+    topic_metadata:
+      name: /task_success
+      offered_qos_profiles: []
+      serialization_format: cdr
+      type: std_msgs/msg/Bool
+      type_description_hash: RIHS01_feb91e995ff9ebd09c0cb3d2aed18b11077585839fb5db80193b62d74528f6c9
+  version: 9

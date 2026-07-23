@@ -1,0 +1,223 @@
+{
+  "scenario": "collision",
+  "scenario_name": "碰撞注入",
+  "recovery_name": "碰撞后撤退与重规划",
+  "predicate": "collision_free",
+  "predicate_label": "运动路径恢复无碰撞",
+  "seed": 7,
+  "horizon": 140,
+  "recovery_start_time": 1.3,
+  "trigger": {
+    "enabled": true,
+    "trigger_source": "online-predicate-monitor",
+    "trigger_step": 26,
+    "trigger_time": 1.3,
+    "violation_step": 25,
+    "violation_time": 1.25,
+    "predicate": "collision_free",
+    "trigger_type": "force-threshold",
+    "evidence": "contact_force=290.2 N > 36.0 N",
+    "predicate_restored_step": 26,
+    "predicate_restored_time": 1.3,
+    "success_step": 98,
+    "success_time": 4.9
+  },
+  "pair_integrity": {
+    "passed": true,
+    "checks": [
+      {
+        "key": "controlled_variables",
+        "label": "环境、种子、故障预算与相机一致",
+        "passed": true
+      },
+      {
+        "key": "initial_state",
+        "label": "机器人、目标与物体初始状态一致",
+        "passed": true
+      },
+      {
+        "key": "fault_signature",
+        "label": "故障类型、参数与注入时刻一致",
+        "passed": true
+      }
+    ],
+    "fingerprint": "19ac89ac1b7c7c86"
+  },
+  "comparison_window": {
+    "duration": 4.9,
+    "policy": "shared observed interval"
+  },
+  "failure": {
+    "success": false,
+    "rows": 140,
+    "duration": 6.95,
+    "peak_force": 290.2,
+    "post_recovery_peak_force": 290.2,
+    "path_length": 0.466,
+    "grasped_frames": 24,
+    "final_grasped": false,
+    "issue_codes": [
+      "ROBOT_STUCK",
+      "FORCE_SPIKE",
+      "GRASP_SLIP"
+    ]
+  },
+  "recovered": {
+    "success": true,
+    "rows": 99,
+    "duration": 4.9,
+    "peak_force": 290.2,
+    "post_recovery_peak_force": 27.938,
+    "path_length": 0.6477,
+    "grasped_frames": 31,
+    "final_grasped": true,
+    "issue_codes": [
+      "FORCE_SPIKE"
+    ]
+  },
+  "metrics": {
+    "success_delta": 1,
+    "predicate_restored": true,
+    "recovery_latency": 3.6,
+    "path_overhead": 0.1817,
+    "path_overhead_rate": 39.0,
+    "post_recovery_peak_force": 27.938,
+    "operator_completion_rate": 100.0
+  },
+  "quality_gates": [
+    {
+      "key": "pair_integrity",
+      "label": "配对实验受控变量一致",
+      "passed": true,
+      "value": "fingerprint=19ac89ac1b7c7c86"
+    },
+    {
+      "key": "failure_control",
+      "label": "故障对照产生预期失败",
+      "passed": true,
+      "value": "failure=false -> recovered=true"
+    },
+    {
+      "key": "task_success",
+      "label": "恢复后任务成功",
+      "passed": true,
+      "value": "success=true"
+    },
+    {
+      "key": "predicate_restored",
+      "label": "运动路径恢复无碰撞",
+      "passed": true,
+      "value": "collision_free=true"
+    },
+    {
+      "key": "recovery_plan_complete",
+      "label": "恢复算子全部完成",
+      "passed": true,
+      "value": "5/5 operators"
+    },
+    {
+      "key": "post_recovery_force",
+      "label": "恢复阶段接触力受控",
+      "passed": true,
+      "value": "27.9 N"
+    }
+  ],
+  "passed": true,
+  "plan": [
+    {
+      "index": 1,
+      "kind": "safety",
+      "operator": "EmergencyStop",
+      "label": "停止当前运动",
+      "status": "completed",
+      "started_at": 1.3,
+      "completed_at": 1.3,
+      "evidence": "recovery-start event"
+    },
+    {
+      "index": 2,
+      "kind": "control",
+      "operator": "RetreatToSafePose",
+      "label": "撤退到方块上方安全位姿",
+      "status": "completed",
+      "started_at": 1.3,
+      "completed_at": 1.3,
+      "evidence": "phase=recovery_retreat"
+    },
+    {
+      "index": 3,
+      "kind": "perception",
+      "operator": "ReobserveObstacle",
+      "label": "重新观测目标与接触区域",
+      "status": "completed",
+      "started_at": 1.8,
+      "completed_at": 1.8,
+      "evidence": "phase=recovery_reobserve"
+    },
+    {
+      "index": 4,
+      "kind": "planning",
+      "operator": "ReplanCollisionFreePath",
+      "label": "重新规划接近与抓取路径",
+      "status": "completed",
+      "started_at": 2.6,
+      "completed_at": 2.6,
+      "evidence": "phase=recovery_reach"
+    },
+    {
+      "index": 5,
+      "kind": "verification",
+      "operator": "ForceGuardedRetry",
+      "label": "带接触力门限完成重试",
+      "status": "completed",
+      "started_at": 4.9,
+      "completed_at": 4.9,
+      "evidence": "success_trace=true and force<=36.0 N"
+    }
+  ],
+  "comparison": [
+    {
+      "metric": "任务成功",
+      "failure": false,
+      "recovered": true,
+      "unit": "bool"
+    },
+    {
+      "metric": "共同窗口轨迹长度",
+      "failure": 0.4659,
+      "recovered": 0.6477,
+      "unit": "m"
+    },
+    {
+      "metric": "Episode 时长",
+      "failure": 6.95,
+      "recovered": 4.9,
+      "unit": "s"
+    },
+    {
+      "metric": "全程接触力峰值",
+      "failure": 290.2,
+      "recovered": 290.2,
+      "unit": "N"
+    },
+    {
+      "metric": "最终抓取状态",
+      "failure": false,
+      "recovered": true,
+      "unit": "bool"
+    }
+  ],
+  "downloads": {
+    "json": "/api/recovery/result/recovery-20260721-205407-7bd9f9"
+  },
+  "variants": {
+    "failure": {
+      "video_url": "/api/recovery/video/recovery-20260721-205407-7bd9f9/failure",
+      "replay_url": "/api/recovery/replay/recovery-20260721-205407-7bd9f9/failure"
+    },
+    "recovered": {
+      "video_url": "/api/recovery/video/recovery-20260721-205407-7bd9f9/recovered",
+      "replay_url": "/api/recovery/replay/recovery-20260721-205407-7bd9f9/recovered"
+    }
+  }
+}

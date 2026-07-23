@@ -1,0 +1,22 @@
+[project]
+name = "embodiscope"
+version = "2.3.0"
+description = "Embodied-agent dataset quality, synchronization, and failure diagnostics"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24,<2",
+  "pandas>=2.0",
+  "pyarrow>=14.0,<26",
+  "h5py>=3.11,<4",
+  "rerun-sdk==0.22.1",
+]
+
+[project.optional-dependencies]
+robotics = ["rosbags>=0.11,<1", "mcap>=1.2,<2"]
+simulation = ["mani-skill==3.0.1", "sapien==3.0.3", "gymnasium>=1.2,<2", "imageio>=2.37,<3", "imageio-ffmpeg>=0.6,<1"]
+test = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q --basetemp=tmp/pytest-tmp -p no:cacheprovider"

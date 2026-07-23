@@ -1,0 +1,367 @@
+{
+  "protocol": {
+    "name": "EmbodiScope RepairBench",
+    "version": "1.0",
+    "seed_count": 4,
+    "intensity_levels": 3,
+    "repair_classes": 5,
+    "sample_count": 64,
+    "fault_sample_count": 60,
+    "nominal_sample_count": 4,
+    "rows_per_sample": 600,
+    "profile": {
+      "profile_id": "generic-manipulator",
+      "name": "通用操作机器人",
+      "description": "面向未知机器人日志的保守默认值，统计阈值与物理下限联合生效。",
+      "robot": "Generic manipulator",
+      "joint_velocity_mad_scale": 7.0,
+      "joint_velocity_floor": 3.5,
+      "stuck_speed_threshold": 0.004,
+      "stuck_min_duration": 1.2,
+      "sync_max_lag_seconds": 0.5,
+      "sync_warning_seconds": 0.08,
+      "sync_critical_seconds": 0.15,
+      "sync_min_confidence": 0.35,
+      "force_mad_scale": 8.0,
+      "force_floor": 35.0,
+      "gap_period_multiplier": 2.5,
+      "gap_extra_seconds": 0.04,
+      "frame_drop_min_duration": 0.04,
+      "slip_gripper_closed": 0.3,
+      "slip_distance_threshold": 0.1,
+      "slip_step_threshold": 0.002,
+      "workspace_x": [
+        -1.2,
+        1.2
+      ],
+      "workspace_y": [
+        -1.2,
+        1.2
+      ],
+      "workspace_z": [
+        -0.05,
+        1.8
+      ],
+      "workspace_bounds": {
+        "ee_x": [
+          -1.2,
+          1.2
+        ],
+        "ee_y": [
+          -1.2,
+          1.2
+        ],
+        "ee_z": [
+          -0.05,
+          1.8
+        ]
+      }
+    },
+    "source_sha256": "a116fa60ff9f8e570e8d22073964d460e7a944d742ac1e53819c06ab3d3e04cf",
+    "python": "3.12.4"
+  },
+  "status": "passed",
+  "metrics": {
+    "repair_success_rate": 1.0,
+    "reconstruction_rmse": 0.00013753,
+    "sync_residual_mae_ms": 0.0,
+    "nominal_overcorrection_rate": 0.0,
+    "nominal_false_quarantine_rate": 0.0,
+    "risk_isolation_recall": 1.0,
+    "physical_measurement_preservation": 1.0,
+    "segmentation_recall": 1.0,
+    "average_retained_rate": 0.9946
+  },
+  "performance": {
+    "latency_p50_ms": 33.5,
+    "latency_p95_ms": 113.41
+  },
+  "quality_gates": [
+    {
+      "name": "修复动作成功率",
+      "value": 1.0,
+      "operator": ">=",
+      "threshold": 0.95,
+      "passed": true
+    },
+    {
+      "name": "重建 RMSE",
+      "value": 0.00013753,
+      "operator": "<=",
+      "threshold": 0.01,
+      "passed": true
+    },
+    {
+      "name": "正常轨迹过度修复率",
+      "value": 0.0,
+      "operator": "<=",
+      "threshold": 0.001,
+      "passed": true
+    },
+    {
+      "name": "风险隔离召回率",
+      "value": 1.0,
+      "operator": ">=",
+      "threshold": 0.95,
+      "passed": true
+    },
+    {
+      "name": "物理测量保持率",
+      "value": 1.0,
+      "operator": "=",
+      "threshold": 1.0,
+      "passed": true
+    },
+    {
+      "name": "时间分段召回率",
+      "value": 1.0,
+      "operator": "=",
+      "threshold": 1.0,
+      "passed": true
+    }
+  ],
+  "per_class": [
+    {
+      "repair_id": "short-gap",
+      "name": "短缺口插值",
+      "action_code": "MISSING_VALUES",
+      "mode": "reconstruction",
+      "support": 12,
+      "success_rate": 1.0,
+      "reconstruction_rmse": 0.00191238,
+      "isolation_recall": null,
+      "preservation_rate": null,
+      "average_retained_rate": 1.0
+    },
+    {
+      "repair_id": "joint-spike",
+      "name": "孤立关节突跳",
+      "action_code": "JOINT_JUMP",
+      "mode": "reconstruction",
+      "support": 12,
+      "success_rate": 1.0,
+      "reconstruction_rmse": 0.00198346,
+      "isolation_recall": null,
+      "preservation_rate": null,
+      "average_retained_rate": 1.0
+    },
+    {
+      "repair_id": "sensor-delay",
+      "name": "视觉时间偏移",
+      "action_code": "SENSOR_DESYNC",
+      "mode": "synchronization",
+      "support": 12,
+      "success_rate": 1.0,
+      "reconstruction_rmse": 0.0,
+      "isolation_recall": null,
+      "preservation_rate": null,
+      "average_retained_rate": 0.9861
+    },
+    {
+      "repair_id": "timestamp-gap",
+      "name": "采样时间缺口",
+      "action_code": "TIMESTAMP_SEGMENT",
+      "mode": "segmentation",
+      "support": 12,
+      "success_rate": 1.0,
+      "reconstruction_rmse": null,
+      "isolation_recall": 1.0,
+      "preservation_rate": 1.0,
+      "average_retained_rate": 1.0
+    },
+    {
+      "repair_id": "force-spike",
+      "name": "真实接触力峰值",
+      "action_code": "FORCE_SPIKE",
+      "mode": "isolation",
+      "support": 12,
+      "success_rate": 1.0,
+      "reconstruction_rmse": null,
+      "isolation_recall": 1.0,
+      "preservation_rate": 1.0,
+      "average_retained_rate": 0.9867
+    }
+  ],
+  "matrix": [
+    {
+      "repair_id": "short-gap",
+      "name": "短缺口插值",
+      "mode": "reconstruction",
+      "intensity": "轻微",
+      "value": 1.0,
+      "unit": "frames",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": 0.00058484,
+      "retained_rate": 1.0
+    },
+    {
+      "repair_id": "short-gap",
+      "name": "短缺口插值",
+      "mode": "reconstruction",
+      "intensity": "中等",
+      "value": 2.0,
+      "unit": "frames",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": 0.00189671,
+      "retained_rate": 1.0
+    },
+    {
+      "repair_id": "short-gap",
+      "name": "短缺口插值",
+      "mode": "reconstruction",
+      "intensity": "严重",
+      "value": 3.0,
+      "unit": "frames",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": 0.00205573,
+      "retained_rate": 1.0
+    },
+    {
+      "repair_id": "joint-spike",
+      "name": "孤立关节突跳",
+      "mode": "reconstruction",
+      "intensity": "轻微",
+      "value": 0.09,
+      "unit": "rad",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": 0.00082074,
+      "retained_rate": 1.0
+    },
+    {
+      "repair_id": "joint-spike",
+      "name": "孤立关节突跳",
+      "mode": "reconstruction",
+      "intensity": "中等",
+      "value": 0.18,
+      "unit": "rad",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": 0.00244402,
+      "retained_rate": 1.0
+    },
+    {
+      "repair_id": "joint-spike",
+      "name": "孤立关节突跳",
+      "mode": "reconstruction",
+      "intensity": "严重",
+      "value": 0.35,
+      "unit": "rad",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": 0.00153761,
+      "retained_rate": 1.0
+    },
+    {
+      "repair_id": "sensor-delay",
+      "name": "视觉时间偏移",
+      "mode": "synchronization",
+      "intensity": "轻微",
+      "value": 0.1,
+      "unit": "s",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": 0.0,
+      "retained_rate": 0.9917
+    },
+    {
+      "repair_id": "sensor-delay",
+      "name": "视觉时间偏移",
+      "mode": "synchronization",
+      "intensity": "中等",
+      "value": 0.16,
+      "unit": "s",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": 0.0,
+      "retained_rate": 0.9867
+    },
+    {
+      "repair_id": "sensor-delay",
+      "name": "视觉时间偏移",
+      "mode": "synchronization",
+      "intensity": "严重",
+      "value": 0.24,
+      "unit": "s",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": 0.0,
+      "retained_rate": 0.98
+    },
+    {
+      "repair_id": "timestamp-gap",
+      "name": "采样时间缺口",
+      "mode": "segmentation",
+      "intensity": "轻微",
+      "value": 0.08,
+      "unit": "s",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": null,
+      "retained_rate": 1.0
+    },
+    {
+      "repair_id": "timestamp-gap",
+      "name": "采样时间缺口",
+      "mode": "segmentation",
+      "intensity": "中等",
+      "value": 0.16,
+      "unit": "s",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": null,
+      "retained_rate": 1.0
+    },
+    {
+      "repair_id": "timestamp-gap",
+      "name": "采样时间缺口",
+      "mode": "segmentation",
+      "intensity": "严重",
+      "value": 0.28,
+      "unit": "s",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": null,
+      "retained_rate": 1.0
+    },
+    {
+      "repair_id": "force-spike",
+      "name": "真实接触力峰值",
+      "mode": "isolation",
+      "intensity": "轻微",
+      "value": 42.0,
+      "unit": "N",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": null,
+      "retained_rate": 0.9867
+    },
+    {
+      "repair_id": "force-spike",
+      "name": "真实接触力峰值",
+      "mode": "isolation",
+      "intensity": "中等",
+      "value": 55.0,
+      "unit": "N",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": null,
+      "retained_rate": 0.9867
+    },
+    {
+      "repair_id": "force-spike",
+      "name": "真实接触力峰值",
+      "mode": "isolation",
+      "intensity": "严重",
+      "value": 75.0,
+      "unit": "N",
+      "support": 4,
+      "success_rate": 1.0,
+      "rmse": null,
+      "retained_rate": 0.9867
+    }
+  ]
+}

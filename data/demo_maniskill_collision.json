@@ -1,0 +1,16 @@
+{
+  "env_info": {
+    "env_id": "PickCube-v1",
+    "fps": 50
+  },
+  "fps": 50,
+  "episodes": [
+    {
+      "episode_id": 0,
+      "episode_seed": 20260712,
+      "control_mode": "pd_ee_delta_pose",
+      "success": false,
+      "failure_mode": "collision_force_spike"
+    }
+  ]
+}

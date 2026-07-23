@@ -1,0 +1,36 @@
+__pycache__/
+.pytest_cache/
+*.py[cod]
+
+# Local build, render, and test intermediates.
+tmp/
+
+# Runtime outputs are reproducible. Keep only the formal assessment evidence.
+output/*
+!output/benchmark/
+output/benchmark/*
+!output/benchmark/faultbench-v1.0.json
+!output/benchmark/repairbench-v1.0.json
+!output/recovery/
+output/recovery/*
+!output/recovery/recovery-20260721-205407-7bd9f9/
+!output/recovery/recovery-20260721-205407-7bd9f9/**
+!output/recovery-benchmark/
+output/recovery-benchmark/*
+!output/recovery-benchmark/recovery-bench-20260723-002311-2c10fb/
+!output/recovery-benchmark/recovery-bench-20260723-002311-2c10fb/**
+
+# Keep the final assessment deck; older generated revisions remain local.
+docs/EmbodiScope_Assessment_Deck*.pptx
+!docs/EmbodiScope_Assessment_Deck_v2.3.pptx
+docs/*.inspect.ndjson
+docs/assets/assessment-slides/
+docs/assets/assessment-video-clips/
+
+# User-uploaded datasets remain local.
+data/uploads/*.csv
+data/uploads/*.parquet
+data/uploads/*.mcap
+data/uploads/*.bag
+data/uploads/*.db3
+!data/uploads/.gitkeep

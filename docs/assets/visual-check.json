@@ -1,0 +1,187 @@
+[
+  {
+    "name": "dashboard-overview",
+    "consoleErrors": [],
+    "viewport": [
+      1440,
+      1000
+    ],
+    "document": [
+      1440,
+      1000
+    ],
+    "horizontalOverflow": false,
+    "dashboardVisible": true,
+    "metricWidths": [
+      219,
+      219,
+      219,
+      219,
+      219
+    ],
+    "spatialCanvas": null
+  },
+  {
+    "name": "dashboard-signals",
+    "consoleErrors": [],
+    "viewport": [
+      1440,
+      1000
+    ],
+    "document": [
+      1440,
+      1091
+    ],
+    "horizontalOverflow": false,
+    "dashboardVisible": true,
+    "metricWidths": [
+      219,
+      219,
+      219,
+      219,
+      219
+    ],
+    "spatialCanvas": null
+  },
+  {
+    "name": "dashboard-spatial",
+    "consoleErrors": [],
+    "viewport": [
+      1440,
+      1000
+    ],
+    "document": [
+      1440,
+      1137
+    ],
+    "horizontalOverflow": false,
+    "dashboardVisible": true,
+    "metricWidths": [
+      219,
+      219,
+      219,
+      219,
+      219
+    ],
+    "spatialCanvas": [
+      1096,
+      528
+    ]
+  },
+  {
+    "name": "dashboard-mobile",
+    "consoleErrors": [],
+    "viewport": [
+      390,
+      844
+    ],
+    "document": [
+      390,
+      1318
+    ],
+    "horizontalOverflow": false,
+    "dashboardVisible": true,
+    "metricWidths": [
+      182,
+      182,
+      182,
+      182,
+      182
+    ],
+    "spatialCanvas": null
+  },
+  {
+    "name": "dashboard-spatial-mobile",
+    "consoleErrors": [],
+    "viewport": [
+      390,
+      844
+    ],
+    "document": [
+      390,
+      1300
+    ],
+    "horizontalOverflow": false,
+    "dashboardVisible": true,
+    "metricWidths": [
+      182,
+      182,
+      182,
+      182,
+      182
+    ],
+    "spatialCanvas": [
+      366,
+      418
+    ]
+  },
+  {
+    "name": "adapter-ecosystem",
+    "consoleErrors": [],
+    "viewport": [
+      1440,
+      1000
+    ],
+    "document": [
+      1440,
+      1019
+    ],
+    "horizontalOverflow": false,
+    "dashboardVisible": true,
+    "metricWidths": [
+      219,
+      219,
+      219,
+      219,
+      219
+    ],
+    "spatialCanvas": null
+  },
+  {
+    "name": "mcap-diagnosis",
+    "consoleErrors": [],
+    "viewport": [
+      1440,
+      1000
+    ],
+    "document": [
+      1440,
+      1000
+    ],
+    "horizontalOverflow": false,
+    "dashboardVisible": true,
+    "metricWidths": [
+      219,
+      219,
+      219,
+      219,
+      219
+    ],
+    "spatialCanvas": null
+  },
+  {
+    "name": "maniskill-spatial",
+    "consoleErrors": [],
+    "viewport": [
+      1440,
+      1000
+    ],
+    "document": [
+      1440,
+      1137
+    ],
+    "horizontalOverflow": false,
+    "dashboardVisible": true,
+    "metricWidths": [
+      219,
+      219,
+      219,
+      219,
+      219
+    ],
+    "spatialCanvas": [
+      1096,
+      528
+    ]
+  }
+]

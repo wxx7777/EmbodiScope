@@ -1,0 +1,22 @@
+{
+  "dataset_id": "lerobot-pusht",
+  "name": "LeRobot PushT",
+  "publisher": "Hugging Face LeRobot",
+  "source_url": "https://huggingface.co/datasets/lerobot/pusht",
+  "mirror_url": "https://hf-mirror.com/datasets/lerobot/pusht",
+  "revision": "7628202a2180972f291ba1bc6723834921e72c19",
+  "license": "MIT",
+  "downloaded_at": "2026-07-13",
+  "description": "Diffusion Policy PushT demonstrations converted to LeRobot Dataset v3.",
+  "success_semantics": "not_labeled",
+  "citation": "Chi et al., Diffusion Policy: Visuomotor Policy Learning via Action Diffusion, IJRR 2024",
+  "files": {
+    "data/chunk-000/file-000.parquet": "9abc0431f12d10c33b5b37b1bf1e6e557c8ae1c8c29fb86658969e48fcbbbf01",
+    "meta/episodes/chunk-000/file-000.parquet": "bc1226f33d3d1635ec1954f9942073709be8e106fde5f4f16b9d52edc4e0ebc4",
+    "meta/info.json": "0b46becc21ad92b117da1e95daf44110bb21d0bde75638b4ad167c8ccd959d38",
+    "meta/stats.json": "2a58f97df48893274c587fdf09f5cecb31fe385b1e188a82197a8972ccfb9d6d",
+    "meta/tasks.parquet": "95535f5152771bc0a6ab0fd93d23d7c1fecd9b7a13dc117852dfdd94f5b2c711",
+    "README.md": "246e94b68f204bfcd05bb32e23631c3316b8de6152d7a85e693d4455540ef72f",
+    "videos/observation.image/chunk-000/file-000.mp4": "f58d11857651dad5983c021b56a50a68a6ce19068834c1fb5cac099219fb3a78"
+  }
+}
