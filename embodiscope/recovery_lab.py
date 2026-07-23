@@ -592,10 +592,12 @@ class RecoveryManager:
                 "failure": {
                     "video_url": f"/api/recovery/video/{job_id}/failure",
                     "replay_url": f"/api/recovery/replay/{job_id}/failure",
+                    "thumbnail_url": f"/api/recovery/thumbnail/{job_id}/failure",
                 },
                 "recovered": {
                     "video_url": f"/api/recovery/video/{job_id}/recovered",
                     "replay_url": f"/api/recovery/replay/{job_id}/recovered",
+                    "thumbnail_url": f"/api/recovery/thumbnail/{job_id}/recovered",
                 },
             }
             (output_dir / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -636,7 +638,7 @@ class RecoveryManager:
             raise ValueError("非法恢复实验编号")
         if variant not in {"failure", "recovered"}:
             raise ValueError("非法恢复实验分组")
-        if name not in {"episode.mp4", "replay.json", "trajectory.h5"}:
+        if name not in {"episode.mp4", "replay.json", "trajectory.h5", "thumbnail.jpg"}:
             raise ValueError("非法恢复实验文件")
         path = (self.output_root / job_id / variant / name).resolve()
         if not path.is_relative_to(self.output_root.resolve()) or not path.is_file():

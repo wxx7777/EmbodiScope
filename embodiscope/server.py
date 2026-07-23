@@ -516,6 +516,14 @@ def make_handler(
                         raise ValueError("恢复回放路径无效")
                     self._send_file(recoveries.artifact(parts[0], parts[1], "replay.json"), "application/json; charset=utf-8")
                     return
+                if path.startswith("/api/recovery/thumbnail/"):
+                    if recoveries is None:
+                        raise ValueError("恢复实验服务未初始化")
+                    parts = path.removeprefix("/api/recovery/thumbnail/").strip("/").split("/")
+                    if len(parts) != 2:
+                        raise ValueError("恢复缩略图路径无效")
+                    self._send_file(recoveries.artifact(parts[0], parts[1], "thumbnail.jpg"), "image/jpeg")
+                    return
                 if path.startswith("/api/recovery/video/"):
                     if recoveries is None:
                         raise ValueError("恢复实验服务未初始化")

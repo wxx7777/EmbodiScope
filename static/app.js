@@ -1456,12 +1456,24 @@ async function startRecovery() {
 
 function renderRecoveryJob(job) {
   $("#recoveryJob").hidden = false;
+  $("#recoveryJob").classList.toggle("completed", job.status === "completed");
   $("#recoveryJobId").textContent = job.id;
   $("#recoveryJobMessage").textContent = job.error || job.message;
   const percent = Math.round((job.progress || 0) * 100);
   $("#recoveryProgressLabel").textContent = `${percent}%`;
   $("#recoveryProgressBar").style.width = `${percent}%`;
-  $("#cancelRecovery").hidden = !["queued", "running"].includes(job.status);
+  const action = $("#cancelRecovery");
+  const running = ["queued", "running"].includes(job.status);
+  const completed = job.status === "completed";
+  action.hidden = !running && !completed;
+  action.textContent = running ? "取消实验" : "查看可视化";
+  action.classList.toggle("view-result", completed);
+}
+
+function scrollRecoveryResults() {
+  const results = $("#recoveryResults");
+  if (results.hidden || $("#recoveryPage").hidden) return;
+  results.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 async function pollRecoveryJob(jobId) {
@@ -1477,6 +1489,7 @@ async function pollRecoveryJob(jobId) {
     $("#runRecovery").disabled = !state.recovery.catalog?.runtime?.available;
     if (job.status === "completed") {
       await loadRecoveryResult(job);
+      scrollRecoveryResults();
       toast("配对恢复实验已完成");
     } else {
       $("#recoveryEmpty").hidden = false;
@@ -1502,6 +1515,24 @@ async function cancelRecovery() {
     });
     toast("已请求取消恢复实验");
   } catch (error) { toast(error.message, true); }
+}
+
+async function handleRecoveryJobAction() {
+  const job = state.recovery.activeJob;
+  if (!job) return;
+  if (job.status !== "completed") {
+    await cancelRecovery();
+    return;
+  }
+  if (!state.recovery.result) {
+    try {
+      await loadRecoveryResult(job);
+    } catch (error) {
+      toast(error.message, true);
+      return;
+    }
+  }
+  scrollRecoveryResults();
 }
 
 function recoveryValue(value, unit) {
@@ -1533,6 +1564,12 @@ async function loadRecoveryResult(job) {
   renderRecoveryResult(result);
   const failureVideo = $("#recoveryFailureVideo");
   const recoveredVideo = $("#recoveryRecoveredVideo");
+  const failurePoster = result.variants.failure.thumbnail_url
+    || result.variants.failure.video_url.replace("/video/", "/thumbnail/");
+  const recoveredPoster = result.variants.recovered.thumbnail_url
+    || result.variants.recovered.video_url.replace("/video/", "/thumbnail/");
+  failureVideo.poster = `${failurePoster}?v=${encodeURIComponent(job.id)}`;
+  recoveredVideo.poster = `${recoveredPoster}?v=${encodeURIComponent(job.id)}`;
   failureVideo.src = `${result.variants.failure.video_url}?v=${encodeURIComponent(job.id)}`;
   recoveredVideo.src = `${result.variants.recovered.video_url}?v=${encodeURIComponent(job.id)}`;
   failureVideo.load();
@@ -2272,8 +2309,9 @@ $("#benchmarkMode").addEventListener("click", () => setWorkspaceMode("benchmark"
 $("#embodiedMode").addEventListener("click", () => setWorkspaceMode("embodied"));
 $("#reasoningMode").addEventListener("click", () => setWorkspaceMode("reasoning"));
 $("#recoveryMode").addEventListener("click", () => setWorkspaceMode("recovery"));
+$("#recoveryJob").after($("#recoveryResults"));
 $("#runRecovery").addEventListener("click", startRecovery);
-$("#cancelRecovery").addEventListener("click", cancelRecovery);
+$("#cancelRecovery").addEventListener("click", handleRecoveryJobAction);
 $("#runRecoveryBenchmark").addEventListener("click", startRecoveryBenchmark);
 $("#cancelRecoveryBenchmark").addEventListener("click", cancelRecoveryBenchmark);
 $("#recoveryScenario").addEventListener("change", handleRecoveryScenarioChange);

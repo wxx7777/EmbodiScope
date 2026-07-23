@@ -42,6 +42,9 @@ def test_recovery_manager_rehydrates_completed_results(tmp_path: Path):
     result_path.parent.mkdir(parents=True)
     result = {"scenario": "collision", "seed": 7, "horizon": 140, "passed": True}
     result_path.write_text(json.dumps(result), encoding="utf-8")
+    thumbnail = result_path.parent / "failure" / "thumbnail.jpg"
+    thumbnail.parent.mkdir()
+    thumbnail.write_bytes(b"thumbnail")
 
     manager = RecoveryManager(tmp_path)
 
@@ -49,6 +52,9 @@ def test_recovery_manager_rehydrates_completed_results(tmp_path: Path):
     assert restored["status"] == "completed"
     assert restored["message"] == "已恢复历史配对实验"
     assert restored["result"] == result
+    assert manager.artifact(job_id, "failure", "thumbnail.jpg") == thumbnail.resolve()
+    with pytest.raises(ValueError, match="非法恢复实验文件"):
+        manager.artifact(job_id, "failure", "unexpected.txt")
 
 
 @pytest.mark.skipif(importlib.util.find_spec("mani_skill") is None, reason="ManiSkill optional runtime is not installed")
